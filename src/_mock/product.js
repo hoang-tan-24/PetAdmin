@@ -52,9 +52,9 @@
 // }));
 
 // export default nameProducts;
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { UseProductsByShopId } from 'src/components/gettest';
+// import React, { useEffect, useState } from 'react';
+// import axios from 'axios';
+import { UseProductsByShopId } from '../components/gettest';
 
 
 // const NameProducts = () => {
