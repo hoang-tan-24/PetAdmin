@@ -1,9 +1,12 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useState } from 'react';
+
 // @mui
 import {
+  InputAdornment,
+  Grid,
+  TextField,
   Card,
   Table,
   Stack,
@@ -22,6 +25,9 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
+
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
@@ -29,17 +35,17 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
+import PRODUCTLIST from '../_mock/product';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'nameProducts', label: 'Sản phẩm', alignRight: false },
-  { id: 'buyer', label: 'Người nhận', alignRight: false },
+  { id: 'classify', label: 'Phân loại', alignRight: false },
   { id: 'quantity', label: 'Số lượng', alignRight: false },
-  { id: 'total', label: 'Tổng giá', alignRight: false },
+  { id: 'price', label: 'Giá', alignRight: false },
+  { id: 'petType', label: 'Loại thú cưng', alignRight: false },
   { id: 'status', label: 'Trạng thái', alignRight: false },
-  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -68,7 +74,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.nameProducts.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -82,11 +88,24 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState('nameProducts');
 
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [openPopup, setOpenPopup] = useState(false);
+
+  const [classification, setClassification] = useState('');
+
+  const [statuss, setStatus] = useState('');
+
+  const [quantity, setQuantity] = useState(1);
+
+
+  const handleOpenPopup = () => {
+    setOpenPopup(true);
+  };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -104,18 +123,27 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = PRODUCTLIST.map((n) => n.nameProducts);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClassificationChange = (event) => {
+    setClassification(event.target.value);
+  };
+
+  const handleStatusChange = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const handleClick = (event) => {
+    const nameProducts = event.target.value;
+    const selectedIndex = selected.indexOf(nameProducts);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, nameProducts);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -125,6 +153,8 @@ export default function UserPage() {
     }
     setSelected(newSelected);
   };
+
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -140,26 +170,122 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const handleQuantityChange = (event) => {
+    const value = event.target;
+    setQuantity(value);
+  };
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const handleIncreaseQuantity = () => {
+    setQuantity(quantity + 1);
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLIST.length) : 0;
+
+  const filteredUsers = applySortFilter(PRODUCTLIST, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title>Product</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Sản Phẩm
+            Sản phẩm
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenPopup}>
             Thêm sản phẩm
           </Button>
+          <Popover
+            open={openPopup}
+            anchorEl={openPopup}
+            onClose={() => setOpenPopup(false)}
+            anchorOrigin={{
+              vertical: 'center',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'center',
+              horizontal: 'center',
+            }}
+          >
+            <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                Thêm sản phẩm
+              </Typography>
+              <TextField label="Tên sản phẩm" fullWidth sx={{ mb: 2 }} />
+              <TextField
+                label="Phân loại"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={classification}
+                onChange={handleClassificationChange}>
+                <MenuItem value="tools">Dụng cụ</MenuItem>
+                <MenuItem value="toys">Đồ chơi</MenuItem>
+                <MenuItem value="foods">Thức ăn</MenuItem>
+              </TextField>
+              <Grid container alignItems="center" justifyContent="center" spacing={2}>
+                <Grid item>
+                  <IconButton onClick={handleDecreaseQuantity}>
+                    <RemoveIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label="Số lượng"
+                    type="number"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                    InputProps={{
+                      inputProps: {
+                        min: 1, // Giá trị nhỏ nhất là 1
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <IconButton onClick={handleIncreaseQuantity}>
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <TextField
+                label="Giá"
+                fullWidth
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+              />
+              <TextField
+                label="Trạng thái"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={statuss}
+                onChange={handleStatusChange}>
+                <MenuItem value="selling">Đang bán</MenuItem>
+                <MenuItem value="hiding">Tạm ẩn</MenuItem>
+              </TextField>
+
+              <Button variant="contained" onClick={() => setOpenPopup(false)}>
+                Thêm sản phẩm
+              </Button>
+            </Paper>
+          </Popover>
         </Stack>
 
         <Card>
@@ -172,39 +298,37 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={PRODUCTLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                    const { id, avatarUrl, nameProducts, classify, quantity, price, petType, status } = row;
+                    const selectedProduct = selected.indexOf(nameProducts) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedProduct}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={selectedProduct} onChange={(event) => handleClick(event, nameProducts)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            <Avatar src={avatarUrl} />
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {nameProducts}
                             </Typography>
                           </Stack>
                         </TableCell>
-
-                        <TableCell align="left">{company}</TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{classify}</TableCell>
+                        <TableCell align="left">{quantity}</TableCell>
+                        <TableCell align="left">{price}</TableCell>
+                        <TableCell align="left">{petType}</TableCell>
 
                         <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
+                          <Label color={(status === 'Đang bán' && 'success') || 'error'}>{(status)}</Label>
                         </TableCell>
 
                         <TableCell align="right">
@@ -252,7 +376,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={PRODUCTLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -292,3 +416,4 @@ export default function UserPage() {
     </>
   );
 }
+

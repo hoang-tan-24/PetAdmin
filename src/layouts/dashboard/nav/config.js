@@ -12,8 +12,8 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Quản lí người dùng',
-    path: '/dashboard/user',
+    title: 'Quản lí đơn hàng',
+    path: '/dashboard/order',
     icon: icon('ic_user'),
   },
   {
@@ -32,10 +32,16 @@ const navConfig = [
     icon: icon('ic_lock'),
   },
   {
+    title: 'Lịch sử dụng dịch vụ',
+    path: '/dashboard/calendar',
+    icon: icon('ic_calendar'),
+  },
+  {
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled'),
   },
+
 ];
 
 export default navConfig;
