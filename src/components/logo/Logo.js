@@ -12,7 +12,7 @@ const Logo = forwardRef(({ disabledLink = false, sx }) => {
   // -------------------------------------------------------
   const logo = (
     <img
-      src="/assets/logoPetuni2.png"
+      src="/assets/PETUNI.svg"
       alt=""
       style={{ width: 250, height: 150, cursor: 'pointer', ...sx }}
     />
