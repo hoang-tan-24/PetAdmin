@@ -35,17 +35,21 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import PRODUCTLIST from '../_mock/product';
+import useProductListByShopId from '../components/getAPI/getProductListByShopId';
+import { createProduct } from '../components/postAPI/createProduct';
+
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'nameProducts', label: 'Sản phẩm', alignRight: false },
-  { id: 'classify', label: 'Phân loại', alignRight: false },
+  { id: 'name', label: 'Sản phẩm', alignRight: false },
+  { id: 'category', label: 'Phân loại', alignRight: false },
   { id: 'quantity', label: 'Số lượng', alignRight: false },
   { id: 'price', label: 'Giá', alignRight: false },
-  { id: 'petType', label: 'Loại thú cưng', alignRight: false },
+  { id: 'petTypeId', label: 'Loại thú cưng', alignRight: false },
   { id: 'status', label: 'Trạng thái', alignRight: false },
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -67,14 +71,15 @@ function getComparator(order, orderBy) {
 }
 
 function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+  const data = Array.from(array);
+  const stabilizedThis = data.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.nameProducts.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -88,7 +93,7 @@ export default function UserPage() {
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('nameProducts');
+  const [orderBy, setOrderBy] = useState('name');
 
   const [filterName, setFilterName] = useState('');
 
@@ -96,11 +101,71 @@ export default function UserPage() {
 
   const [openPopup, setOpenPopup] = useState(false);
 
+  // category
   const [classification, setClassification] = useState('');
 
-  const [statuss, setStatus] = useState('');
+  const [statuss, setStatus] = useState(0);
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
+
+  const [productName, setProductName] = useState('');
+
+  const [productDescription, setProductDescription] = useState('');
+
+  const [productPrice, setProductPrice] = useState(0);
+
+  const [petTypeId, setPetTypeId] = useState(5);
+
+  const [productImage, setProductImage] = useState('');
+
+  const [productShopId, setProductShopId] = useState(1);
+
+  // lay duoc roi
+  const test = useProductListByShopId();
+
+  const handleCreateProduct = async (event) => {
+    // event.preventDefault();
+
+    const productData = {
+      Name: productName,
+      Category: classification,
+      Description: productDescription,
+      Price: productPrice,
+      Quantity: quantity,
+      PetTypeId: petTypeId,
+      ShopId: productShopId,
+      Image: productImage,
+      Status: statuss
+    };
+
+    const res = createProduct(productData);
+    console.log(res)
+  };
+
+  const handleProductNameChange = (event) => {
+    setProductName(event.target.value);
+  };
+
+  const handleProductDescriptionChange = (event) => {
+    setProductDescription(event.target.value);
+  };
+
+  const handleProductPriceChange = (event) => {
+    setProductPrice(event.target.value);
+  };
+
+  const handlePetTypeIdChange = (event) => {
+    setPetTypeId(event.target.value);
+  };
+
+  const handleProductImageChange = (event) => {
+    setProductImage(event.target.value);
+  };
+
+  const handleProductShopIdChange = (event) => {
+    setProductShopId(event.target.value);
+  };
+
 
 
   const handleOpenPopup = () => {
@@ -123,7 +188,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = PRODUCTLIST.map((n) => n.nameProducts);
+      const newSelecteds = test.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -139,11 +204,11 @@ export default function UserPage() {
   };
 
   const handleClick = (event) => {
-    const nameProducts = event.target.value;
-    const selectedIndex = selected.indexOf(nameProducts);
+    const name = event.target.value;
+    const selectedIndex = selected.indexOf(name);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, nameProducts);
+      newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -186,9 +251,9 @@ export default function UserPage() {
   };
 
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - test.length) : 0;
 
-  const filteredUsers = applySortFilter(PRODUCTLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(test, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -223,17 +288,41 @@ export default function UserPage() {
               <Typography variant="h6" gutterBottom>
                 Thêm sản phẩm
               </Typography>
-              <TextField label="Tên sản phẩm" fullWidth sx={{ mb: 2 }} />
+              <TextField label="Tên sản phẩm"
+                value={productName}
+                onChange={handleProductNameChange}
+                fullWidth sx={{ mb: 2 }} />
+              <TextField label="Link Hình Ảnh"
+                value={productImage}
+                onChange={handleProductImageChange}
+                fullWidth sx={{ mb: 2 }} />
               <TextField
-                label="Phân loại"
+                label="Phân loại Thú cưng"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={petTypeId}
+                onChange={handlePetTypeIdChange}>
+                <MenuItem value="1">Chó</MenuItem>
+                <MenuItem value="2">Mèo</MenuItem>
+                <MenuItem value="3">Chim</MenuItem>
+                <MenuItem value="4">Cá</MenuItem>
+                <MenuItem value="5 ">Không phân loại</MenuItem>
+              </TextField>
+              <TextField
+                label="Phân loại Danh mục"
                 select
                 fullWidth
                 sx={{ mb: 2 }}
                 value={classification}
                 onChange={handleClassificationChange}>
-                <MenuItem value="tools">Dụng cụ</MenuItem>
-                <MenuItem value="toys">Đồ chơi</MenuItem>
-                <MenuItem value="foods">Thức ăn</MenuItem>
+                <MenuItem value="Thức ăn">Thức ăn</MenuItem>
+                <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
+                <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
+                <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
+                <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
+                <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
+                <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
               </TextField>
               <Grid container alignItems="center" justifyContent="center" spacing={2}>
                 <Grid item>
@@ -266,10 +355,16 @@ export default function UserPage() {
                 label="Giá"
                 fullWidth
                 sx={{ mb: 2 }}
+                value={productPrice}
+                onChange={handleProductPriceChange}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
                 }}
               />
+              <TextField label="Mô tả"
+                value={productDescription}
+                onChange={handleProductDescriptionChange}
+                fullWidth sx={{ mb: 2 }} />
               <TextField
                 label="Trạng thái"
                 select
@@ -277,13 +372,17 @@ export default function UserPage() {
                 sx={{ mb: 2 }}
                 value={statuss}
                 onChange={handleStatusChange}>
-                <MenuItem value="selling">Đang bán</MenuItem>
-                <MenuItem value="hiding">Tạm ẩn</MenuItem>
+                <MenuItem value="0">Tạm ngừng</MenuItem>
+                <MenuItem value="1">Đang bán</MenuItem>
               </TextField>
 
-              <Button variant="contained" onClick={() => setOpenPopup(false)}>
+              <Button variant="contained" onClick={() => {
+                handleCreateProduct();
+                setOpenPopup(false);
+              }}>
                 Thêm sản phẩm
               </Button>
+
             </Paper>
           </Popover>
         </Stack>
@@ -298,38 +397,47 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={PRODUCTLIST.length}
+                  rowCount={test.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, avatarUrl, nameProducts, classify, quantity, price, petType, status } = row;
-                    const selectedProduct = selected.indexOf(nameProducts) !== -1;
+                    const { id, image, name, category, quantity, price, petTypeId, status } = row;
+                    const selectedProduct = selected.indexOf(name) !== -1;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedProduct}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedProduct} onChange={(event) => handleClick(event, nameProducts)} />
+                          <Checkbox checked={selectedProduct} onChange={(event) => handleClick(event, name)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar src={avatarUrl} />
+                            <Avatar src={image} />
                             <Typography variant="subtitle2" noWrap>
-                              {nameProducts}
+                              {name}
                             </Typography>
                           </Stack>
                         </TableCell>
-                        <TableCell align="left">{classify}</TableCell>
+                        <TableCell align="left">{category}</TableCell>
                         <TableCell align="left">{quantity}</TableCell>
                         <TableCell align="left">{price}</TableCell>
-                        <TableCell align="left">{petType}</TableCell>
+                        <TableCell align="left">
+                          {petTypeId === 1 && <Label color="success">Chó </Label>}
+                          {petTypeId === 2 && <Label color="error">Mèo </Label>}
+                          {petTypeId === 3 && <Label color="warning">Chim </Label>}
+                          {petTypeId === 4 && <Label color="info">Cá </Label>}
+                          {petTypeId > 4 || petTypeId < 1 && <Label color="default">Thú cưng </Label>}
+                        </TableCell>
 
                         <TableCell align="left">
-                          <Label color={(status === 'Đang bán' && 'success') || 'error'}>{(status)}</Label>
+                          {status === 0 && <Label color="error">Tạm ngừng </Label>}
+                          {status === 1 && <Label color="success">Đang bán</Label>}
+                          {status === 2 && <Label color="error">Ẩn </Label>}
                         </TableCell>
+
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
@@ -376,7 +484,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={PRODUCTLIST.length}
+            count={test.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -405,12 +513,12 @@ export default function UserPage() {
       >
         <MenuItem>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          Chỉnh sửa
         </MenuItem>
 
         <MenuItem sx={{ color: 'error.main' }}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
+          Xóa
         </MenuItem>
       </Popover>
     </>
