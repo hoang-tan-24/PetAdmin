@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState } from 'react';
-
+import CloseIcon from '@mui/icons-material/Close';
 // @mui
 import {
   InputAdornment,
@@ -37,6 +37,8 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
 import useProductListByShopId from '../components/getAPI/getProductListByShopId';
 import { createProduct } from '../components/postAPI/createProduct';
+import { updateProductStatus } from '../components/putAPI/updateProductStatus';
+import { updateProduct } from '../components/putAPI/updateProduct';
 
 
 
@@ -101,34 +103,43 @@ export default function UserPage() {
 
   const [openPopup, setOpenPopup] = useState(false);
 
-  // category
-  const [classification, setClassification] = useState('');
+  const [editPopup, setEditPopup] = useState(false);
 
+
+  // create
+  const [category, setCategory] = useState('');
   const [statuss, setStatus] = useState(0);
-
   const [quantity, setQuantity] = useState(0);
-
   const [productName, setProductName] = useState('');
-
   const [productDescription, setProductDescription] = useState('');
-
   const [productPrice, setProductPrice] = useState(0);
-
   const [petTypeId, setPetTypeId] = useState(5);
-
   const [productImage, setProductImage] = useState('');
-
   const [productShopId, setProductShopId] = useState(1);
 
+  // edit 
+  const [editedId, setEditedId] = useState(1);
+
+  const [updatedStatus, setUpdatedStatus] = useState(0);
+
+  const [editedName, setEditedName] = useState('name');
+  const [editedCategory, setEditedCategory] = useState('category');
+  const [editedQuantity, setEditedQuantity] = useState(0);
+  const [editedPrice, setEditedPrice] = useState(0);
+  const [editedPetTypeId, setEditedPetTypeId] = useState(0);
+  const [editedStatus, setEditedStatus] = useState(0);
+  const [editedDescription, setEditedDescription] = useState('description');
+  const [editedImage, setEditedImage] = useState('image');
+
   // lay duoc roi
-  const test = useProductListByShopId();
+  const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
 
   const handleCreateProduct = async (event) => {
     // event.preventDefault();
 
     const productData = {
       Name: productName,
-      Category: classification,
+      Category: category,
       Description: productDescription,
       Price: productPrice,
       Quantity: quantity,
@@ -140,6 +151,7 @@ export default function UserPage() {
 
     const res = createProduct(productData);
     console.log(res)
+    window.location.reload(); // Refresh the page
   };
 
   const handleProductNameChange = (event) => {
@@ -162,19 +174,42 @@ export default function UserPage() {
     setProductImage(event.target.value);
   };
 
-  const handleProductShopIdChange = (event) => {
-    setProductShopId(event.target.value);
-  };
+  const handleEditPopup = () => {
+    setEditPopup(true);
 
+  };
 
 
   const handleOpenPopup = () => {
     setOpenPopup(true);
   };
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, id, image, quantity, category, name, description, petTypeId, price, status) => {
     setOpen(event.currentTarget);
+    setEditedName(name);
+    setEditedCategory(category);
+    setEditedQuantity(quantity);
+    setEditedPrice(price);
+    setEditedPetTypeId(petTypeId);
+    setEditedStatus(status);
+    setEditedId(id)
+    setEditedDescription(description)
+    setEditedImage(image)
+
+    if (status === 0) {
+      setUpdatedStatus(1);
+    } else if (status === 1) {
+      setUpdatedStatus(0);
+    } else {
+      setUpdatedStatus(status);
+    }
   };
+
+  const handleUpdateStatus = () => {
+    updateProductStatus(editedId, updatedStatus)
+    window.location.reload(); // Refresh the page
+  }
+
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -188,27 +223,27 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = test.map((n) => n.name);
+      const newSelecteds = PRODUCTLISTGETBYSHOPID.map((n) => n.id);
       setSelected(newSelecteds);
-      return;
+    } else {
+      setSelected([]);
     }
-    setSelected([]);
   };
 
-  const handleClassificationChange = (event) => {
-    setClassification(event.target.value);
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
   };
 
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
 
-  const handleClick = (event) => {
-    const name = event.target.value;
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
+
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -216,6 +251,7 @@ export default function UserPage() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
+
     setSelected(newSelected);
   };
 
@@ -243,17 +279,80 @@ export default function UserPage() {
   const handleIncreaseQuantity = () => {
     setQuantity(quantity + 1);
   };
-
   const handleDecreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
 
+  // edit
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - test.length) : 0;
+  const handleEditProduct = () => {
+    const productData = {
+      Name: editedName,
+      Category: editedCategory,
+      Description: editedDescription,
+      Price: editedPrice,
+      Quantity: editedQuantity,
+      PetTypeId: editedPetTypeId,
+      ShopId: productShopId,
+      Image: editedImage,
+      Status: editedStatus
+    };
 
-  const filteredUsers = applySortFilter(test, getComparator(order, orderBy), filterName);
+    const res = updateProduct(editedId, productData);
+    console.log(res)
+
+    window.location.reload(); // Refresh the page
+  }
+
+  const handleEditIncreaseQuantity = () => {
+    setEditedQuantity(editedQuantity + 1);
+  };
+
+  const handleEditDecreaseQuantity = () => {
+    if (editedQuantity > 1) {
+      setEditedQuantity(editedQuantity - 1);
+    }
+  };
+
+  const handleEditCategoryChange = (event) => {
+    setEditedCategory(event.target.value);
+  };
+
+  const handleEditStatusChange = (event) => {
+    setEditedStatus(event.target.value);
+  };
+
+  const handleEditProductNameChange = (event) => {
+    setEditedName(event.target.value);
+  };
+
+  const handleEditProductDescriptionChange = (event) => {
+    setEditedDescription(event.target.value);
+  };
+
+  const handleEditProductPriceChange = (event) => {
+    setEditedPrice(event.target.value);
+  };
+
+  const handleEditPetTypeIdChange = (event) => {
+    setEditedPetTypeId(event.target.value);
+  };
+
+  const handleEditProductImageChange = (event) => {
+    setEditedImage(event.target.value);
+  };
+
+  const handleEditQuantityChange = (event) => {
+    const value = event.target;
+    setEditedQuantity(value);
+  };
+
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLISTGETBYSHOPID.length) : 0;
+
+  const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -314,8 +413,8 @@ export default function UserPage() {
                 select
                 fullWidth
                 sx={{ mb: 2 }}
-                value={classification}
-                onChange={handleClassificationChange}>
+                value={category}
+                onChange={handleCategoryChange}>
                 <MenuItem value="Thức ăn">Thức ăn</MenuItem>
                 <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
                 <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
@@ -382,7 +481,12 @@ export default function UserPage() {
               }}>
                 Thêm sản phẩm
               </Button>
-
+              <IconButton
+                sx={{ position: 'absolute', top: 5, right: 5 }}
+                onClick={() => setOpenPopup(null)}
+              >
+                <CloseIcon />
+              </IconButton>
             </Paper>
           </Popover>
         </Stack>
@@ -397,27 +501,27 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={test.length}
+                  rowCount={PRODUCTLISTGETBYSHOPID.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, image, name, category, quantity, price, petTypeId, status } = row;
-                    const selectedProduct = selected.indexOf(name) !== -1;
+                    const { id, image, name, category, quantity, price, petTypeId, status, description } = row;
+                    const selectedProduct = selected.indexOf(id) !== -1;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedProduct}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedProduct} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={selectedProduct} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar src={image} />
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {id}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -440,7 +544,7 @@ export default function UserPage() {
 
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, quantity, category, name, description, petTypeId, price, status)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -484,7 +588,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={test.length}
+            count={PRODUCTLISTGETBYSHOPID.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -511,16 +615,149 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleEditPopup}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Chỉnh sửa
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Xóa
-        </MenuItem>
+
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+            Xóa
+          </MenuItem>
+        )}
+
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+            Mở lại
+          </MenuItem>
+        )}
+
       </Popover>
+
+      <Popover
+        open={editPopup}
+        anchorEl={editPopup}
+        onClose={() => setEditPopup(false)}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+      >
+        <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+          <Typography variant="h6" gutterBottom>
+            Thêm sản phẩm
+          </Typography>
+          <TextField label="Tên sản phẩm"
+            value={editedName}
+            onChange={handleEditProductNameChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField label="Link Hình Ảnh"
+            value={editedImage}
+            onChange={handleEditProductImageChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField
+            label="Phân loại Thú cưng"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedPetTypeId}
+            onChange={handleEditPetTypeIdChange}>
+            <MenuItem value="1">Chó</MenuItem>
+            <MenuItem value="2">Mèo</MenuItem>
+            <MenuItem value="3">Chim</MenuItem>
+            <MenuItem value="4">Cá</MenuItem>
+            <MenuItem value="5 ">Không phân loại</MenuItem>
+          </TextField>
+          <TextField
+            label="Phân loại Danh mục"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedCategory}
+            onChange={handleEditCategoryChange}>
+            <MenuItem value="Thức ăn">Thức ăn</MenuItem>
+            <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
+            <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
+            <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
+            <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
+            <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
+            <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
+          </TextField>
+          <Grid container alignItems="center" justifyContent="center" spacing={2}>
+            <Grid item>
+              <IconButton onClick={handleEditDecreaseQuantity}>
+                <RemoveIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Số lượng"
+                type="number"
+                fullWidth
+                sx={{ mb: 2 }}
+                value={editedQuantity}
+                onChange={handleEditQuantityChange}
+                InputProps={{
+                  inputProps: {
+                    min: 1, // Giá trị nhỏ nhất là 1
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <IconButton onClick={handleEditIncreaseQuantity}>
+                <AddIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+          <TextField
+            label="Giá"
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedPrice}
+            onChange={handleEditProductPriceChange}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+            }}
+          />
+          <TextField label="Mô tả"
+            value={editedDescription}
+            onChange={handleEditProductDescriptionChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField
+            label="Trạng thái"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedStatus}
+            onChange={handleEditStatusChange}>
+            <MenuItem value="0">Tạm ngừng</MenuItem>
+            <MenuItem value="1">Đang bán</MenuItem>
+          </TextField>
+
+          <Button variant="contained" onClick={() => {
+            handleEditProduct();
+            setEditPopup(false);
+          }}>
+            Sửa sản phẩm
+          </Button>
+          <IconButton
+            sx={{ position: 'absolute', top: 5, right: 5 }}
+            onClick={() => setEditPopup(null)}
+          >
+            <CloseIcon />
+          </IconButton>
+
+        </Paper>
+      </Popover>
+
     </>
   );
 }
