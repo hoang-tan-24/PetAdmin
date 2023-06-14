@@ -10,6 +10,8 @@ import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import Calendar from './pages/Calendar';
+import PetPage from './pages/PetPage';
+
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +30,8 @@ export default function Router() {
         { path: 'order', element: <OrderPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'service', element: <ServicePage /> },
-        { path: 'calendar', element: <Calendar /> }
+        { path: 'calendar', element: <Calendar /> },
+        { path: 'pets', element: <PetPage /> }
       ],
     },
     {

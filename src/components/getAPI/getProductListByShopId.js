@@ -24,13 +24,13 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-const useProductListByShopId = () => {
+const useProductListByShopId = (shopId) => {
   const [nameProducts, setNameProducts] = useState([]);
 
   useEffect(() => {
     const fetchNameProducts = async () => {
       try {
-        const response = await axios.get('https://localhost:7196/api/Product?ShopId=1');
+        const response = await axios.get(`https://localhost:7196/api/Product?ShopId=${shopId}`);
         const data = response.data;
         setNameProducts(data);
       } catch (error) {
