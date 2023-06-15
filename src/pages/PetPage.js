@@ -35,20 +35,22 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import useProductListByShopId from '../components/getAPI/getProductListByShopId';
 import { createProduct } from '../components/postAPI/createProduct';
-import { updateProductStatus } from '../components/putAPI/updateProductStatus';
-import { updateProduct } from '../components/putAPI/updateProduct';
+
+import usePetListByShopId from '../components/getAPI/getPetListByShopId';
+import { updatePetStatus } from '../components/putAPI/updatePetStatus';
+import { updatePet } from '../components/putAPI/updatePet';
+import { createPet } from '../components/postAPI/createPet';
 
 
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Sản phẩm', alignRight: false },
-    { id: 'category', label: 'Phân loại', alignRight: false },
-    { id: 'quantity', label: 'Số lượng', alignRight: false },
-    { id: 'price', label: 'Giá', alignRight: false },
+    { id: 'name', label: 'Thú cưng', alignRight: false },
+    { id: 'gender', label: 'Giới tính', alignRight: false },
+    { id: 'image', label: 'Hình minh họa', alignRight: false },
+    { id: 'price', label: 'Giá (VND)', alignRight: false },
     { id: 'petTypeId', label: 'Loại thú cưng', alignRight: false },
     { id: 'status', label: 'Trạng thái', alignRight: false },
     { id: '' },
@@ -107,15 +109,15 @@ export default function UserPage() {
 
 
     // create
-    const [category, setCategory] = useState('');
+    const [gender, setGender] = useState('Không phân loại');
     const [statuss, setStatus] = useState(0);
-    const [quantity, setQuantity] = useState(0);
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [productPrice, setProductPrice] = useState(0);
     const [petTypeId, setPetTypeId] = useState(5);
     const [productImage, setProductImage] = useState('');
-    const [productShopId, setProductShopId] = useState(1);
+    const [shopId, setShopId] = useState(1);
+    const [address, setAddress] = useState('');
 
     // edit 
     const [editedId, setEditedId] = useState(1);
@@ -123,33 +125,33 @@ export default function UserPage() {
     const [updatedStatus, setUpdatedStatus] = useState(0);
 
     const [editedName, setEditedName] = useState('name');
-    const [editedCategory, setEditedCategory] = useState('category');
-    const [editedQuantity, setEditedQuantity] = useState(0);
+    const [editedGender, setEditedGender] = useState('Không phân loại');
     const [editedPrice, setEditedPrice] = useState(0);
-    const [editedPetTypeId, setEditedPetTypeId] = useState(0);
+    const [editedPetTypeId, setEditedPetTypeId] = useState(5);
     const [editedStatus, setEditedStatus] = useState(0);
     const [editedDescription, setEditedDescription] = useState('description');
     const [editedImage, setEditedImage] = useState('image');
+    const [editedAddress, setEditedAddress] = useState('');
 
     // lay duoc roi
-    const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
+    const PETLISTGETBYSHOPID = usePetListByShopId(shopId);
 
-    const handleCreateProduct = async (event) => {
+    const handleCreateItem = async (event) => {
         // event.preventDefault();
 
-        const productData = {
+        const itemData = {
             Name: productName,
-            Category: category,
+            Gender: gender,
             Description: productDescription,
             Price: productPrice,
-            Quantity: quantity,
-            PetTypeId: petTypeId,
-            ShopId: productShopId,
             Image: productImage,
-            Status: statuss
+            PetTypeId: petTypeId,
+            ShopId: shopId,
+            Status: statuss,
+            Address: address
         };
 
-        const res = createProduct(productData);
+        const res = createPet(itemData);
         console.log(res)
         window.location.reload(); // Refresh the page
     };
@@ -174,6 +176,10 @@ export default function UserPage() {
         setProductImage(event.target.value);
     };
 
+    const handleAddressChange = (event) => {
+        setAddress(event.target.value);
+    };
+
     const handleEditPopup = () => {
         setEditPopup(true);
 
@@ -184,11 +190,11 @@ export default function UserPage() {
         setOpenPopup(true);
     };
 
-    const handleOpenMenu = (event, id, image, quantity, category, name, description, petTypeId, price, status) => {
+    const handleOpenMenu = (event, id, image, gender, name, description, petTypeId, price, status, address) => {
         setOpen(event.currentTarget);
         setEditedName(name);
-        setEditedCategory(category);
-        setEditedQuantity(quantity);
+        setEditedGender(gender);
+        setEditedAddress(address)
         setEditedPrice(price);
         setEditedPetTypeId(petTypeId);
         setEditedStatus(status);
@@ -206,7 +212,7 @@ export default function UserPage() {
     };
 
     const handleUpdateStatus = () => {
-        updateProductStatus(editedId, updatedStatus)
+        updatePetStatus(editedId, updatedStatus)
         window.location.reload(); // Refresh the page
     }
 
@@ -223,15 +229,15 @@ export default function UserPage() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = PRODUCTLISTGETBYSHOPID.map((n) => n.id);
+            const newSelecteds = PETLISTGETBYSHOPID.map((n) => n.id);
             setSelected(newSelecteds);
         } else {
             setSelected([]);
         }
     };
 
-    const handleCategoryChange = (event) => {
-        setCategory(event.target.value);
+    const handleGenderChange = (event) => {
+        setGender(event.target.value);
     };
 
     const handleStatusChange = (event) => {
@@ -271,53 +277,32 @@ export default function UserPage() {
         setFilterName(event.target.value);
     };
 
-    const handleQuantityChange = (event) => {
-        const value = event.target;
-        setQuantity(value);
-    };
-
-    const handleIncreaseQuantity = () => {
-        setQuantity(quantity + 1);
-    };
-    const handleDecreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
-        }
-    };
 
     // edit
 
-    const handleEditProduct = () => {
-        const productData = {
+    const handleEditItem = () => {
+        const itemData = {
             Name: editedName,
-            Category: editedCategory,
+            Gender: editedGender,
             Description: editedDescription,
             Price: editedPrice,
-            Quantity: editedQuantity,
             PetTypeId: editedPetTypeId,
-            ShopId: productShopId,
+            ShopId: shopId,
             Image: editedImage,
-            Status: editedStatus
+            Status: editedStatus,
+            Address: editedAddress
         };
 
-        const res = updateProduct(editedId, productData);
+        const res = updatePet(editedId, itemData);
         console.log(res)
 
         window.location.reload(); // Refresh the page
     }
 
-    const handleEditIncreaseQuantity = () => {
-        setEditedQuantity(editedQuantity + 1);
-    };
 
-    const handleEditDecreaseQuantity = () => {
-        if (editedQuantity > 1) {
-            setEditedQuantity(editedQuantity - 1);
-        }
-    };
 
-    const handleEditCategoryChange = (event) => {
-        setEditedCategory(event.target.value);
+    const handleEditGenderChange = (event) => {
+        setEditedGender(event.target.value);
     };
 
     const handleEditStatusChange = (event) => {
@@ -343,16 +328,15 @@ export default function UserPage() {
     const handleEditProductImageChange = (event) => {
         setEditedImage(event.target.value);
     };
-
-    const handleEditQuantityChange = (event) => {
-        const value = event.target;
-        setEditedQuantity(value);
+    const handleEditedAddressChange = (event) => {
+        setEditedAddress(event.target.value);
     };
 
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLISTGETBYSHOPID.length) : 0;
 
-    const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PETLISTGETBYSHOPID.length) : 0;
+
+    const filteredUsers = applySortFilter(PETLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -365,10 +349,10 @@ export default function UserPage() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Sản phẩm
+                        Thú cưng
                     </Typography>
                     <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenPopup}>
-                        Thêm sản phẩm
+                        Thêm thú cưng
                     </Button>
                     <Popover
                         open={openPopup}
@@ -385,9 +369,9 @@ export default function UserPage() {
                     >
                         <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
                             <Typography variant="h6" gutterBottom>
-                                Thêm sản phẩm
+                                Thêm thú cưng
                             </Typography>
-                            <TextField label="Tên sản phẩm"
+                            <TextField label="Tên thú cưng"
                                 value={productName}
                                 onChange={handleProductNameChange}
                                 fullWidth sx={{ mb: 2 }} />
@@ -406,50 +390,19 @@ export default function UserPage() {
                                 <MenuItem value="2">Mèo</MenuItem>
                                 <MenuItem value="3">Chim</MenuItem>
                                 <MenuItem value="4">Cá</MenuItem>
-                                <MenuItem value="5 ">Không phân loại</MenuItem>
+                                <MenuItem value="5">Không phân loại</MenuItem>
                             </TextField>
                             <TextField
-                                label="Phân loại Danh mục"
+                                label="Giới tính"
                                 select
                                 fullWidth
                                 sx={{ mb: 2 }}
-                                value={category}
-                                onChange={handleCategoryChange}>
-                                <MenuItem value="Thức ăn">Thức ăn</MenuItem>
-                                <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
-                                <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
-                                <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
-                                <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
-                                <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
-                                <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
+                                value={gender}
+                                onChange={handleGenderChange}>
+                                <MenuItem value="Nam (Đực)">Nam (Đực)</MenuItem>
+                                <MenuItem value="Nữ (Cái)">Nữ (Cái)</MenuItem>
+                                <MenuItem value="Không phân loại">Không phân loại</MenuItem>
                             </TextField>
-                            <Grid container alignItems="center" justifyContent="center" spacing={2}>
-                                <Grid item>
-                                    <IconButton onClick={handleDecreaseQuantity}>
-                                        <RemoveIcon />
-                                    </IconButton>
-                                </Grid>
-                                <Grid item>
-                                    <TextField
-                                        label="Số lượng"
-                                        type="number"
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                        value={quantity}
-                                        onChange={handleQuantityChange}
-                                        InputProps={{
-                                            inputProps: {
-                                                min: 1, // Giá trị nhỏ nhất là 1
-                                            },
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <IconButton onClick={handleIncreaseQuantity}>
-                                        <AddIcon />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
                             <TextField
                                 label="Giá"
                                 fullWidth
@@ -464,6 +417,10 @@ export default function UserPage() {
                                 value={productDescription}
                                 onChange={handleProductDescriptionChange}
                                 fullWidth sx={{ mb: 2 }} />
+                            <TextField label="Địa chỉ"
+                                value={address}
+                                onChange={handleAddressChange}
+                                fullWidth sx={{ mb: 2 }} />
                             <TextField
                                 label="Trạng thái"
                                 select
@@ -476,10 +433,10 @@ export default function UserPage() {
                             </TextField>
 
                             <Button variant="contained" onClick={() => {
-                                handleCreateProduct();
+                                handleCreateItem();
                                 setOpenPopup(false);
                             }}>
-                                Thêm sản phẩm
+                                Thêm thú cưng
                             </Button>
                             <IconButton
                                 sx={{ position: 'absolute', top: 5, right: 5 }}
@@ -501,14 +458,14 @@ export default function UserPage() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={PRODUCTLISTGETBYSHOPID.length}
+                                    rowCount={PETLISTGETBYSHOPID.length}
                                     numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
                                     onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { id, image, name, category, quantity, price, petTypeId, status, description } = row;
+                                        const { id, name, gender, image, price, petTypeId, status, description, address } = row;
                                         const selectedProduct = selected.indexOf(id) !== -1;
 
                                         return (
@@ -519,21 +476,29 @@ export default function UserPage() {
 
                                                 <TableCell component="th" scope="row" padding="none">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar src={image} />
-                                                        <Typography variant="subtitle2" noWrap>
-                                                            {id}
+                                                        <Typography variant="subtitle1" noWrap>
+                                                            {name}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
-                                                <TableCell align="left">{category}</TableCell>
-                                                <TableCell align="left">{quantity}</TableCell>
+                                                <TableCell align="left">{gender}</TableCell>
+                                                <TableCell align="left">
+                                                    <div style={{ width: '100px', height: '100px', overflow: 'hidden' }}>
+                                                        <img
+                                                            src={image}
+                                                            alt=""
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        />
+                                                    </div>
+                                                </TableCell>
+
                                                 <TableCell align="left">{price}</TableCell>
                                                 <TableCell align="left">
                                                     {petTypeId === 1 && <Label color="success">Chó </Label>}
                                                     {petTypeId === 2 && <Label color="error">Mèo </Label>}
                                                     {petTypeId === 3 && <Label color="warning">Chim </Label>}
                                                     {petTypeId === 4 && <Label color="info">Cá </Label>}
-                                                    {petTypeId > 4 || petTypeId < 1 && <Label color="default">Thú cưng </Label>}
+                                                    {petTypeId === 5 && <Label color="default">Không phân loại </Label>}
                                                 </TableCell>
 
                                                 <TableCell align="left">
@@ -544,7 +509,7 @@ export default function UserPage() {
 
 
                                                 <TableCell align="right">
-                                                    <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, quantity, category, name, description, petTypeId, price, status)}>
+                                                    <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, gender, name, description, petTypeId, price, status, address)}>
                                                         <Iconify icon={'eva:more-vertical-fill'} />
                                                     </IconButton>
                                                 </TableCell>
@@ -588,7 +553,7 @@ export default function UserPage() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={PRODUCTLISTGETBYSHOPID.length}
+                        count={PETLISTGETBYSHOPID.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -652,9 +617,9 @@ export default function UserPage() {
             >
                 <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
                     <Typography variant="h6" gutterBottom>
-                        Thêm sản phẩm
+                        Sửa thú cưng
                     </Typography>
-                    <TextField label="Tên sản phẩm"
+                    <TextField label="Tên thú cưng"
                         value={editedName}
                         onChange={handleEditProductNameChange}
                         fullWidth sx={{ mb: 2 }} />
@@ -673,50 +638,20 @@ export default function UserPage() {
                         <MenuItem value="2">Mèo</MenuItem>
                         <MenuItem value="3">Chim</MenuItem>
                         <MenuItem value="4">Cá</MenuItem>
-                        <MenuItem value="5 ">Không phân loại</MenuItem>
+                        <MenuItem value="5">Không phân loại</MenuItem>
                     </TextField>
                     <TextField
-                        label="Phân loại Danh mục"
+                        label="Giới tính"
                         select
                         fullWidth
                         sx={{ mb: 2 }}
-                        value={editedCategory}
-                        onChange={handleEditCategoryChange}>
-                        <MenuItem value="Thức ăn">Thức ăn</MenuItem>
-                        <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
-                        <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
-                        <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
-                        <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
-                        <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
-                        <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
+                        value={editedGender}
+                        onChange={handleEditGenderChange}>
+                        <MenuItem value="Nam (Đực)">Nam (Đực)</MenuItem>
+                        <MenuItem value="Nữ (Cái)">Nữ (Cái)</MenuItem>
+                        <MenuItem value="Không phân loại">Không phân loại</MenuItem>
                     </TextField>
-                    <Grid container alignItems="center" justifyContent="center" spacing={2}>
-                        <Grid item>
-                            <IconButton onClick={handleEditDecreaseQuantity}>
-                                <RemoveIcon />
-                            </IconButton>
-                        </Grid>
-                        <Grid item>
-                            <TextField
-                                label="Số lượng"
-                                type="number"
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={editedQuantity}
-                                onChange={handleEditQuantityChange}
-                                InputProps={{
-                                    inputProps: {
-                                        min: 1, // Giá trị nhỏ nhất là 1
-                                    },
-                                }}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <IconButton onClick={handleEditIncreaseQuantity}>
-                                <AddIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
+
                     <TextField
                         label="Giá"
                         fullWidth
@@ -731,6 +666,10 @@ export default function UserPage() {
                         value={editedDescription}
                         onChange={handleEditProductDescriptionChange}
                         fullWidth sx={{ mb: 2 }} />
+                    <TextField label="Địa chỉ"
+                        value={editedAddress}
+                        onChange={handleEditedAddressChange}
+                        fullWidth sx={{ mb: 2 }} />
                     <TextField
                         label="Trạng thái"
                         select
@@ -743,10 +682,10 @@ export default function UserPage() {
                     </TextField>
 
                     <Button variant="contained" onClick={() => {
-                        handleEditProduct();
+                        handleEditItem();
                         setEditPopup(false);
                     }}>
-                        Sửa sản phẩm
+                        Sửa thú cưng
                     </Button>
                     <IconButton
                         sx={{ position: 'absolute', top: 5, right: 5 }}

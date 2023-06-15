@@ -48,7 +48,7 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Sản phẩm', alignRight: false },
   { id: 'category', label: 'Phân loại', alignRight: false },
   { id: 'quantity', label: 'Số lượng', alignRight: false },
-  { id: 'price', label: 'Giá', alignRight: false },
+  { id: 'price', label: 'Giá (VND)', alignRight: false },
   { id: 'petTypeId', label: 'Loại thú cưng', alignRight: false },
   { id: 'status', label: 'Trạng thái', alignRight: false },
   { id: '' },
@@ -126,7 +126,7 @@ export default function UserPage() {
   const [editedCategory, setEditedCategory] = useState('category');
   const [editedQuantity, setEditedQuantity] = useState(0);
   const [editedPrice, setEditedPrice] = useState(0);
-  const [editedPetTypeId, setEditedPetTypeId] = useState(0);
+  const [editedPetTypeId, setEditedPetTypeId] = useState(5);
   const [editedStatus, setEditedStatus] = useState(0);
   const [editedDescription, setEditedDescription] = useState('description');
   const [editedImage, setEditedImage] = useState('image');
@@ -406,7 +406,7 @@ export default function UserPage() {
                 <MenuItem value="2">Mèo</MenuItem>
                 <MenuItem value="3">Chim</MenuItem>
                 <MenuItem value="4">Cá</MenuItem>
-                <MenuItem value="5 ">Không phân loại</MenuItem>
+                <MenuItem value="5">Không phân loại</MenuItem>
               </TextField>
               <TextField
                 label="Phân loại Danh mục"
@@ -521,7 +521,7 @@ export default function UserPage() {
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar src={image} />
                             <Typography variant="subtitle2" noWrap>
-                              {id}
+                              {name}
                             </Typography>
                           </Stack>
                         </TableCell>
@@ -533,7 +533,7 @@ export default function UserPage() {
                           {petTypeId === 2 && <Label color="error">Mèo </Label>}
                           {petTypeId === 3 && <Label color="warning">Chim </Label>}
                           {petTypeId === 4 && <Label color="info">Cá </Label>}
-                          {petTypeId > 4 || petTypeId < 1 && <Label color="default">Thú cưng </Label>}
+                          {petTypeId === 5 && <Label color="default">Không phân loại </Label>}
                         </TableCell>
 
                         <TableCell align="left">
@@ -652,7 +652,7 @@ export default function UserPage() {
       >
         <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
           <Typography variant="h6" gutterBottom>
-            Thêm sản phẩm
+            Sửa sản phẩm
           </Typography>
           <TextField label="Tên sản phẩm"
             value={editedName}
@@ -673,7 +673,7 @@ export default function UserPage() {
             <MenuItem value="2">Mèo</MenuItem>
             <MenuItem value="3">Chim</MenuItem>
             <MenuItem value="4">Cá</MenuItem>
-            <MenuItem value="5 ">Không phân loại</MenuItem>
+            <MenuItem value="5">Không phân loại</MenuItem>
           </TextField>
           <TextField
             label="Phân loại Danh mục"
