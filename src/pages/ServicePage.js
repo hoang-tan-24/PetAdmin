@@ -2,8 +2,12 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
 import { useState } from 'react';
+import CloseIcon from '@mui/icons-material/Close';
 // @mui
 import {
+  InputAdornment,
+  Grid,
+  TextField,
   Card,
   Table,
   Stack,
@@ -22,6 +26,8 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
@@ -31,13 +37,21 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
 import USERLIST from '../_mock/user';
 
+import useServiceListByShopId from '../components/getAPI/getServiceListByShopId';
+import { createService } from '../components/postAPI/createService';
+import { updateService } from '../components/putAPI/updateService';
+import { updateServiceStatus } from '../components/putAPI/updateServiceStatus';
+
+
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'nameService', label: 'Dịch vụ', alignRight: false },
-  { id: 'buyer', label: 'Người nhận', alignRight: false },
-  { id: 'quantity', label: 'Số lượng', alignRight: false },
-  { id: 'total', label: 'Tổng giá', alignRight: false },
+  { id: 'name', label: 'Dịch vụ', alignRight: false },
+  { id: 'categoryId', label: 'Phân loại', alignRight: false },
+  { id: 'maxSlot', label: 'Số slot', alignRight: false },
+  { id: 'duration', label: 'Thời lượng', alignRight: false },
+  { id: 'price', label: 'Giá (VND)', alignRight: false },
+  { id: 'petTypeId', label: 'Loại thú cưng', alignRight: false },
   { id: 'status', label: 'Trạng thái', alignRight: false },
   { id: '' },
 ];
@@ -88,10 +102,113 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+  const [openPopup, setOpenPopup] = useState(false);
+
+  const [editPopup, setEditPopup] = useState(false);
+
+  // create
+  const [serviceName, setServiceName] = useState('');
+  const [categoryId, setCategory] = useState(0);
+  const [servicePrice, setServicePrice] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [serviceDescription, setServiceDescription] = useState('');
+  const [petTypeId, setPetTypeId] = useState(5);
+  const [serviceShopId, setServiceShopId] = useState(1);
+  const [maxSlot, setMaxSlot] = useState(0);
+  const [serviceImage, setServiceImage] = useState('');
+  const [status, setStatus] = useState(0);
+  // edit
+  const [editedId, setEditedId] = useState(1);
+  const [editedName, setEditedName] = useState('name');
+  const [editedCategoryId, setEditedCategory] = useState(0);
+  const [editedPrice, setEditedPrice] = useState(0);
+  const [editedDuration, setEditedDuration] = useState(0);
+  const [editedDescription, setEditedDescription] = useState('description');
+  const [editedPetTypeId, setEditedPetTypeId] = useState(0);
+  const [editedSlot, setEditedSlot] = useState(0);
+  const [editedImage, setEditedImage] = useState('image');
+  const [updatedStatus, setUpdatedStatus] = useState(0);
+  const [editedStatus, setEditedStatus] = useState(0);
+
+  const serviceListGetByShopId = useServiceListByShopId(serviceShopId);
+
+  const handleCreateService = async (event) => {
+    // event.preventDefault();
+
+    const serviceData = {
+      Name: serviceName,
+      CategoryId: categoryId,
+      Description: serviceDescription,
+      Price: servicePrice,
+      Duration: duration,
+      PetTypeId: petTypeId,
+      ShopId: serviceShopId,
+      MaxSlot: maxSlot,
+      Image: serviceImage,
+      Status: status
+    };
+
+    const res = createService(serviceData);
+    console.log(res)
+    window.location.reload(); // Refresh the page
   };
 
+  const handleServiceNameChange = (event) => {
+    setServiceName(event.target.value);
+  };
+
+
+  const handleServiceDescriptionChange = (event) => {
+    setServiceDescription(event.target.value);
+  };
+
+  const handleServicePriceChange = (event) => {
+    setServicePrice(event.target.value);
+  };
+
+  const handlePetTypeIdChange = (event) => {
+    setPetTypeId(event.target.value);
+  };
+
+  const handleServiceImageChange = (event) => {
+    setServiceImage(event.target.value);
+  };
+
+  const handleEditPopup = () => {
+    setEditPopup(true);
+
+  };
+
+  const handleOpenPopup = () => {
+    setOpenPopup(true);
+  };
+
+ const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
+    setOpen(event.currentTarget);
+    setEditedName(name);
+    setEditedCategory(categoryId);
+    setEditedSlot(maxSlot);
+    setEditedPrice(price);
+    setEditedPetTypeId(petTypeId);
+    setEditedStatus(status);
+    setEditedId(id)
+    setEditedDescription(description)
+    setEditedImage(image)
+    setEditedDuration(duration)
+
+    if (status === 0) {
+      setUpdatedStatus(1);
+    } else if (status === 1) {
+      setUpdatedStatus(0);
+    } else {
+      setUpdatedStatus(status);
+    }
+  };
+
+  const handleUpdateStatus = () => {
+    updateServiceStatus(editedId, updatedStatus)
+    window.location.reload(); // Refresh the page
+  }
   const handleCloseMenu = () => {
     setOpen(null);
   };
@@ -104,11 +221,19 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = serviceListGetByShopId.map((n) => n.id);
       setSelected(newSelecteds);
-      return;
+    } else {
+      setSelected([]);
     }
-    setSelected([]);
+  };
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
+
+  const handleStatusChange = (event) => {
+    setStatus(event.target.value);
   };
 
   const handleClick = (event, name) => {
@@ -140,26 +265,274 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const handleSlotChange = (event) => {
+    const value = event.target;
+    setMaxSlot(value);
+  };
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const handleIncreaseSlot = () => {
+    setMaxSlot(maxSlot + 1);
+  };
+
+  const handleDecreaseSlot = () => {
+    if (maxSlot > 1) {
+      setMaxSlot(maxSlot - 1);
+    }
+  };
+  const handleDurationChange = (event) => {
+    const value = event.target;
+    setDuration(value);
+  };
+
+  const handleIncreaseDuration = () => {
+    setDuration(duration + 1);
+  };
+
+  const handleDecreaseDuration = () => {
+    if (duration > 1) {
+      setDuration(duration - 1);
+    }
+  };
+  // edit
+  const handleEditService = () => {
+    const serviceData = {
+      Name: editedName,
+      CategoryId: editedCategoryId,
+      Description: editedDescription,
+      Price: editedPrice,
+      Duration: editedDuration,
+      PetTypeId: editedPetTypeId,
+      ShopId: serviceShopId,
+      MaxSlot: editedSlot,
+      Image: editedImage,
+      Status: editedStatus
+    };
+
+    const res = updateService(editedId, serviceData);
+    console.log(res)
+
+    window.location.reload(); // Refresh the page
+  }
+
+  const handleEditIncreaseSlot = () => {
+    setEditedSlot(editedSlot + 1);
+  };
+
+  const handleEditDecreaseSlot = () => {
+    if (editedSlot > 1) {
+      setEditedSlot(editedSlot - 1);
+    }
+  };
+
+  const handleEditIncreaseDuration = () => {
+    setEditedDuration(editedDuration + 1);
+  };
+
+  const handleEditDecreaseDuration = () => {
+    if (editedDuration > 1) {
+      setEditedDuration(editedDuration - 1);
+    }
+  };
+  const handleEditCategoryChange = (event) => {
+    setEditedCategory(event.target.value);
+  };
+
+  const handleEditStatusChange = (event) => {
+    setEditedStatus(event.target.value);
+  };
+
+  const handleEditProductNameChange = (event) => {
+    setEditedName(event.target.value);
+  };
+
+  const handleEditProductDescriptionChange = (event) => {
+    setEditedDescription(event.target.value);
+  };
+
+  const handleEditProductPriceChange = (event) => {
+    setEditedPrice(event.target.value);
+  };
+
+  const handleEditPetTypeIdChange = (event) => {
+    setEditedPetTypeId(event.target.value);
+  };
+
+  const handleEditProductImageChange = (event) => {
+    setEditedImage(event.target.value);
+  };
+
+  const handleEditSlotChange = (event) => {
+    const value = event.target;
+    setEditedSlot(value);
+  };
+
+  const handleEditDurationChange = (event) => {
+    const value = event.target;
+    setEditedDuration(value);
+  };
+
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - serviceListGetByShopId.length) : 0;
+
+  const filteredUsers = applySortFilter(serviceListGetByShopId, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title>Service</title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Sản Phẩm
+            Dịch vụ
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Thêm sản phẩm
+          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenPopup}>
+            Thêm Dịch vụ
           </Button>
+          <Popover
+            open={openPopup}
+            anchorEl={openPopup}
+            onClose={() => setOpenPopup(false)}
+            anchorOrigin={{
+              vertical: 'center',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'center',
+              horizontal: 'center',
+            }}
+          >
+             <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+              <Typography variant="h6" gutterBottom>
+                Thêm dịch vụ
+              </Typography>
+              <TextField label="Tên dịch vụ"
+                value={serviceName}
+                onChange={handleServiceNameChange}
+                fullWidth sx={{ mb: 2 }} />
+              <TextField label="Link Hình Ảnh"
+                value={serviceImage}
+                onChange={handleServiceImageChange}
+                fullWidth sx={{ mb: 2 }} />
+              <TextField
+                label="Phân loại dịch vụ"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={petTypeId}
+                onChange={handlePetTypeIdChange}>
+                <MenuItem value="1">Chó</MenuItem>
+                <MenuItem value="2">Mèo</MenuItem>
+                <MenuItem value="3">Chim</MenuItem>
+                <MenuItem value="4">Cá</MenuItem>
+                <MenuItem value="5">Không phân loại</MenuItem>
+              </TextField>
+              <TextField
+                label="Phân loại Danh mục"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={categoryId}
+                onChange={handleCategoryChange}>
+                <MenuItem value="1">Chăm sóc và vệ sinh</MenuItem>
+                <MenuItem value="2">Y tế và thú y</MenuItem>
+                <MenuItem value="3">Nuôi dưỡng</MenuItem>
+              </TextField>
+              <Grid container alignItems="center" justifyContent="center" spacing={2}>
+                <Grid item>
+                  <IconButton onClick={handleDecreaseSlot}>
+                    <RemoveIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label="Slot"
+                    type="number"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    value={maxSlot}
+                    onChange={handleSlotChange}
+                    InputProps={{
+                      inputProps: {
+                        min: 1, // Giá trị nhỏ nhất là 1
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <IconButton onClick={handleIncreaseSlot}>
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <Grid container alignItems="center" justifyContent="center" spacing={2}>
+                <Grid item>
+                  <IconButton onClick={handleDecreaseDuration}>
+                    <RemoveIcon />
+                  </IconButton>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label="Thời lượng"
+                    type="number"
+                    fullWidth
+                    sx={{ mb: 2 }}
+                    value={duration}
+                    onChange={handleDurationChange}
+                    InputProps={{
+                      inputProps: {
+                        min: 1, // Giá trị nhỏ nhất là 1
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item>
+                  <IconButton onClick={handleIncreaseDuration}>
+                    <AddIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+              <TextField
+                label="Giá"
+                fullWidth
+                sx={{ mb: 2 }}
+                value={servicePrice}
+                onChange={handleServicePriceChange}
+                InputProps={{
+                  endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+                }}
+              />
+              <TextField label="Mô tả"
+                value={serviceDescription}
+                onChange={handleServiceDescriptionChange}
+                fullWidth sx={{ mb: 2 }} />
+              <TextField
+                label="Trạng thái"
+                select
+                fullWidth
+                sx={{ mb: 2 }}
+                value={status}
+                onChange={handleStatusChange}>
+                <MenuItem value="0">Tạm ngừng</MenuItem>
+                <MenuItem value="1">Đang bán</MenuItem>
+              </TextField>
+
+              <Button variant="contained" onClick={() => {
+                handleCreateService();
+                setOpenPopup(false);
+              }}>
+                Thêm sản phẩm
+              </Button>
+              <IconButton
+                sx={{ position: 'absolute', top: 5, right: 5 }}
+                onClick={() => setOpenPopup(null)}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Paper>
+          </Popover>
         </Stack>
 
         <Card>
@@ -172,43 +545,56 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={serviceListGetByShopId.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
-
+                    const { id, image, name, categoryId, duration, price, maxSlot, petTypeId, status, description } = row;
+                    const selectedService = selected.indexOf(id) !== -1;
                     return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedService}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={selectedService} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            <Avatar alt={image} src={image} />
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>
                           </Stack>
                         </TableCell>
-
-                        <TableCell align="left">{company}</TableCell>
-
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
-
                         <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
+                          {categoryId === 1 && <Label color="success">Chăm sóc và vệ sinh</Label>}
+                          {categoryId === 2 && <Label color="error">Y tế và thú y</Label>}
+                          {categoryId === 3 && <Label color="warning">Nuôi dưỡng</Label>}
+                          {categoryId === 4 && <Label color="default">Dịch vụ</Label>}
+                        </TableCell>
+                        <TableCell align="left">{maxSlot}</TableCell>
+                        <TableCell align="left">{duration}</TableCell>
+                        <TableCell align="left">{price}</TableCell>
+                        <TableCell align="left">
+                          {petTypeId === 1 && <Label color="success">Chó </Label>}
+                          {petTypeId === 2 && <Label color="error">Mèo </Label>}
+                          {petTypeId === 3 && <Label color="warning">Chim </Label>}
+                          {petTypeId === 4 && <Label color="info">Cá </Label>}
+                          {petTypeId === 5 && <Label color="default">Thú cưng </Label>}
                         </TableCell>
 
+                        <TableCell align="left">
+                          {status === 0 && <Label color="error">Tạm ngừng </Label>}
+                          {status === 1 && <Label color="success">Đang bán</Label>}
+                          {status === 2 && <Label color="error">Ẩn </Label>}
+                        </TableCell>
+
+                        
+
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -252,7 +638,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={serviceListGetByShopId.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -279,16 +665,172 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem>
+        <MenuItem onClick={handleEditPopup}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
+          Chỉnh sửa
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
+
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+            Xóa
+          </MenuItem>
+        )}
+
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+            Mở lại
+          </MenuItem>
+        )}
+
       </Popover>
+
+      <Popover
+        open={editPopup}
+        anchorEl={editPopup}
+        onClose={() => setEditPopup(false)}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+      >
+        <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+          <Typography variant="h6" gutterBottom>
+            Sửa sản phẩm
+          </Typography>
+          <TextField label="Tên sản phẩm"
+            value={editedName}
+            onChange={handleEditProductNameChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField label="Link Hình Ảnh"
+            value={editedImage}
+            onChange={handleEditProductImageChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField
+            label="Phân loại Thú cưng"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedPetTypeId}
+            onChange={handleEditPetTypeIdChange}>
+            <MenuItem value="1">Chó</MenuItem>
+            <MenuItem value="2">Mèo</MenuItem>
+            <MenuItem value="3">Chim</MenuItem>
+            <MenuItem value="4">Cá</MenuItem>
+            <MenuItem value="5">Không phân loại</MenuItem>
+          </TextField>
+          <TextField
+            label="Phân loại Danh mục"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedCategoryId}
+            onChange={handleEditCategoryChange}>
+            <MenuItem value="1">Chăm sóc và vệ sinh</MenuItem>
+            <MenuItem value="2">Y tế và thú y</MenuItem>
+            <MenuItem value="3">Nuôi dưỡng</MenuItem>
+          </TextField>
+          <Grid container alignItems="center" justifyContent="center" spacing={2}>
+            <Grid item>
+              <IconButton onClick={handleEditDecreaseSlot}>
+                <RemoveIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Số slot"
+                type="number"
+                fullWidth
+                sx={{ mb: 2 }}
+                value={editedSlot}
+                onChange={handleEditSlotChange}
+                InputProps={{
+                  inputProps: {
+                    min: 1, // Giá trị nhỏ nhất là 1
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <IconButton onClick={handleEditIncreaseSlot}>
+                <AddIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+          <Grid container alignItems="center" justifyContent="center" spacing={2}>
+            <Grid item>
+              <IconButton onClick={handleEditDecreaseDuration}>
+                <RemoveIcon />
+              </IconButton>
+            </Grid>
+            <Grid item>
+              <TextField
+                label="Thời lượng"
+                type="number"
+                fullWidth
+                sx={{ mb: 2 }}
+                value={editedDuration}
+                onChange={handleEditDurationChange}
+                InputProps={{
+                  inputProps: {
+                    min: 1, // Giá trị nhỏ nhất là 1
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <IconButton onClick={handleEditIncreaseDuration}>
+                <AddIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+          <TextField
+            label="Giá"
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedPrice}
+            onChange={handleEditProductPriceChange}
+            InputProps={{
+              endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
+            }}
+          />
+          <TextField label="Mô tả"
+            value={editedDescription}
+            onChange={handleEditProductDescriptionChange}
+            fullWidth sx={{ mb: 2 }} />
+          <TextField
+            label="Trạng thái"
+            select
+            fullWidth
+            sx={{ mb: 2 }}
+            value={editedStatus}
+            onChange={handleEditStatusChange}>
+            <MenuItem value="0">Tạm ngừng</MenuItem>
+            <MenuItem value="1">Đang bán</MenuItem>
+          </TextField>
+
+          <Button variant="contained" onClick={() => {
+            handleEditService();
+            setEditPopup(false);
+          }}>
+            Sửa dịch vụ
+          </Button>
+          <IconButton
+            sx={{ position: 'absolute', top: 5, right: 5 }}
+            onClick={() => setEditPopup(null)}
+          >
+            <CloseIcon />
+          </IconButton>
+
+        </Paper>
+      </Popover>
+
     </>
   );
 }
