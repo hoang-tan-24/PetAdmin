@@ -47,6 +47,37 @@ const navConfig = [
     path: '/404',
     icon: icon('ic_disabled'),
   },
+  {
+    title: 'System Users',
+    path: '/system/users',
+    icon: icon('ic_disabled'),
+  },
+  {
+    title: 'System Shops',
+    path: '/system/shops',
+    icon: icon('ic_disabled'),
+  },
+  {
+    title: 'System Pets',
+    path: '/system/pets',
+    icon: icon('ic_disabled'),
+  },
+  {
+    title: 'System Products',
+    path: '/system/products',
+    icon: icon('ic_disabled'),
+  },
+  {
+    title: 'System Services',
+    path: '/system/services',
+    icon: icon('ic_disabled'),
+  },
+  {
+    title: 'System Dashboard',
+    path: '/system/dashboard',
+    icon: icon('ic_disabled'),
+  },
+
 
 ];
 

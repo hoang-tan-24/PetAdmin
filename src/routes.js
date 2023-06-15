@@ -11,6 +11,14 @@ import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import Calendar from './pages/Calendar';
 import PetPage from './pages/PetPage';
+import SystemProductPage from './pages/SystemProductPage';
+import SystemPetPage from './pages/SystemPetPage';
+import SystemServicePage from './pages/SystemServicePage';
+import SystemShopPage from './pages/SystemShopPage';
+import SystemUserPage from './pages/SystemUserPage';
+import SystemDashboardPage from './pages/SystemDashboardPage';
+
+
 
 
 // ----------------------------------------------------------------------
@@ -31,7 +39,26 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'service', element: <ServicePage /> },
         { path: 'calendar', element: <Calendar /> },
-        { path: 'pets', element: <PetPage /> }
+        { path: 'pets', element: <PetPage /> },
+        { path: 'system/pets', element: <SystemPetPage /> },
+        { path: 'system/products', element: <SystemProductPage /> },
+        { path: 'system/services', element: <SystemServicePage /> },
+        { path: 'system/shops', element: <SystemShopPage /> },
+        { path: 'system/users', element: <SystemUserPage /> },
+        { path: 'system/dashboard', element: <SystemDashboardPage /> },
+      ],
+    },
+    {
+      path: '/system',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to="/dashboard/app" />, index: true },
+        { path: 'pets', element: <SystemPetPage /> },
+        { path: 'products', element: <SystemProductPage /> },
+        { path: 'services', element: <SystemServicePage /> },
+        { path: 'shops', element: <SystemShopPage /> },
+        { path: 'users', element: <SystemUserPage /> },
+        { path: 'dashboard', element: <SystemDashboardPage /> },
       ],
     },
     {
