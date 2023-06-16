@@ -28,6 +28,8 @@ import {
 
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import usePetListAdmin from '../components/getAPI/getPetListAdmin';
+import useShopById from '../components/getAPI/getShopById';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
@@ -35,19 +37,22 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import useProductListByShopId from '../components/getAPI/getProductListByShopId';
 import { createProduct } from '../components/postAPI/createProduct';
-import { updateProductStatus } from '../components/putAPI/updateProductStatus';
-import { updateProduct } from '../components/putAPI/updateProduct';
+
+import usePetListByShopId from '../components/getAPI/getPetListByShopId';
+import { updatePetStatus } from '../components/putAPI/updatePetStatus';
+import { updatePet } from '../components/putAPI/updatePet';
+import { createPet } from '../components/postAPI/createPet';
+
 
 
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'name', label: 'Sản phẩm', alignRight: false },
-    { id: 'category', label: 'Phân loại', alignRight: false },
-    { id: 'quantity', label: 'Số lượng', alignRight: false },
+    { id: 'name', label: 'Thú cưng', alignRight: false },
+    { id: 'shopId', label: 'Cửa hàng', alignRight: false },
+    { id: 'image', label: 'Hình minh họa', alignRight: false },
     { id: 'price', label: 'Giá (VND)', alignRight: false },
     { id: 'petTypeId', label: 'Loại thú cưng', alignRight: false },
     { id: 'status', label: 'Trạng thái', alignRight: false },
@@ -107,15 +112,17 @@ export default function UserPage() {
 
 
     // create
-    const [category, setCategory] = useState('');
+    const [gender, setGender] = useState('Không phân loại');
     const [statuss, setStatus] = useState(0);
-    const [quantity, setQuantity] = useState(0);
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [productPrice, setProductPrice] = useState(0);
     const [petTypeId, setPetTypeId] = useState(5);
     const [productImage, setProductImage] = useState('');
-    const [productShopId, setProductShopId] = useState(1);
+    const [shopId, setShopId] = useState(1);
+    const [address, setAddress] = useState('');
+    const [shopName, setShopName] = useState('');
+    const [Id, setId] = useState(1);
 
     // edit 
     const [editedId, setEditedId] = useState(1);
@@ -123,36 +130,18 @@ export default function UserPage() {
     const [updatedStatus, setUpdatedStatus] = useState(0);
 
     const [editedName, setEditedName] = useState('name');
-    const [editedCategory, setEditedCategory] = useState('category');
-    const [editedQuantity, setEditedQuantity] = useState(0);
+    const [editedGender, setEditedGender] = useState('Không phân loại');
     const [editedPrice, setEditedPrice] = useState(0);
     const [editedPetTypeId, setEditedPetTypeId] = useState(5);
     const [editedStatus, setEditedStatus] = useState(0);
     const [editedDescription, setEditedDescription] = useState('description');
     const [editedImage, setEditedImage] = useState('image');
+    const [editedAddress, setEditedAddress] = useState('');
 
     // lay duoc roi
-    const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
+    const PETLISTGETBYSHOPID = usePetListAdmin(shopId);
 
-    const handleCreateProduct = async (event) => {
-        // event.preventDefault();
-
-        const productData = {
-            Name: productName,
-            Category: category,
-            Description: productDescription,
-            Price: productPrice,
-            Quantity: quantity,
-            PetTypeId: petTypeId,
-            ShopId: productShopId,
-            Image: productImage,
-            Status: statuss
-        };
-
-        const res = createProduct(productData);
-        console.log(res)
-        window.location.reload(); // Refresh the page
-    };
+    const getShopById = useShopById(shopId);
 
     const handleProductNameChange = (event) => {
         setProductName(event.target.value);
@@ -174,6 +163,10 @@ export default function UserPage() {
         setProductImage(event.target.value);
     };
 
+    const handleAddressChange = (event) => {
+        setAddress(event.target.value);
+    };
+
     const handleEditPopup = () => {
         setEditPopup(true);
 
@@ -183,12 +176,11 @@ export default function UserPage() {
     const handleOpenPopup = () => {
         setOpenPopup(true);
     };
-
-    const handleOpenMenu = (event, id, image, quantity, category, name, description, petTypeId, price, status) => {
+    const handleOpenMenu = (event, id, image, gender, name, description, petTypeId, price, status, address) => {
         setOpen(event.currentTarget);
         setEditedName(name);
-        setEditedCategory(category);
-        setEditedQuantity(quantity);
+        setEditedGender(gender);
+        setEditedAddress(address)
         setEditedPrice(price);
         setEditedPetTypeId(petTypeId);
         setEditedStatus(status);
@@ -196,20 +188,21 @@ export default function UserPage() {
         setEditedDescription(description)
         setEditedImage(image)
 
-        if (status === 0) {
-            setUpdatedStatus(1);
-        } else if (status === 1) {
+        if (status === 0 || status === 1) {
+            setUpdatedStatus(2);
+        } else if (status === 2) {
             setUpdatedStatus(0);
         } else {
             setUpdatedStatus(status);
         }
     };
-
     const handleUpdateStatus = () => {
-        updateProductStatus(editedId, updatedStatus)
+        updatePetStatus(editedId, updatedStatus)
         window.location.reload(); // Refresh the page
     }
+    
 
+    
 
     const handleCloseMenu = () => {
         setOpen(null);
@@ -223,15 +216,16 @@ export default function UserPage() {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = PRODUCTLISTGETBYSHOPID.map((n) => n.id);
-            setSelected(newSelecteds);
+            const newSelecteds = PETLISTGETBYSHOPID.map((n) => n.id);
+            const selectShop = getShopById.map((n) => n.id);
+            setSelected(newSelecteds, selectShop);
         } else {
             setSelected([]);
         }
     };
 
-    const handleCategoryChange = (event) => {
-        setCategory(event.target.value);
+    const handleGenderChange = (event) => {
+        setGender(event.target.value);
     };
 
     const handleStatusChange = (event) => {
@@ -271,88 +265,42 @@ export default function UserPage() {
         setFilterName(event.target.value);
     };
 
-    const handleQuantityChange = (event) => {
-        const value = event.target;
-        setQuantity(value);
-    };
-
-    const handleIncreaseQuantity = () => {
-        setQuantity(quantity + 1);
-    };
-    const handleDecreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
-        }
-    };
 
     // edit
-
-    const handleEditProduct = () => {
-        const productData = {
+    const handleEditItem = () => {
+        const itemData = {
             Name: editedName,
-            Category: editedCategory,
+            Gender: editedGender,
             Description: editedDescription,
             Price: editedPrice,
-            Quantity: editedQuantity,
             PetTypeId: editedPetTypeId,
-            ShopId: productShopId,
+            ShopId: shopId,
             Image: editedImage,
-            Status: editedStatus
+            Status: editedStatus,
+            Address: editedAddress
         };
 
-        const res = updateProduct(editedId, productData);
+        const res = updatePet(editedId, itemData);
         console.log(res)
 
         window.location.reload(); // Refresh the page
     }
 
-    const handleEditIncreaseQuantity = () => {
-        setEditedQuantity(editedQuantity + 1);
-    };
-
-    const handleEditDecreaseQuantity = () => {
-        if (editedQuantity > 1) {
-            setEditedQuantity(editedQuantity - 1);
-        }
-    };
-
-    const handleEditCategoryChange = (event) => {
-        setEditedCategory(event.target.value);
-    };
-
     const handleEditStatusChange = (event) => {
         setEditedStatus(event.target.value);
     };
 
-    const handleEditProductNameChange = (event) => {
-        setEditedName(event.target.value);
-    };
-
-    const handleEditProductDescriptionChange = (event) => {
-        setEditedDescription(event.target.value);
-    };
-
-    const handleEditProductPriceChange = (event) => {
-        setEditedPrice(event.target.value);
-    };
-
-    const handleEditPetTypeIdChange = (event) => {
-        setEditedPetTypeId(event.target.value);
-    };
-
-    const handleEditProductImageChange = (event) => {
-        setEditedImage(event.target.value);
-    };
-
-    const handleEditQuantityChange = (event) => {
-        const value = event.target;
-        setEditedQuantity(value);
-    };
 
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLISTGETBYSHOPID.length) : 0;
+    
 
-    const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
+
+
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PETLISTGETBYSHOPID.length) : 0;
+
+    const filteredUsers = applySortFilter(PETLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
+
+    const shopById = applySortFilter(getShopById, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -365,132 +313,11 @@ export default function UserPage() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Sản phẩm
+                        Thú cưng
                     </Typography>
-                    <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenPopup}>
-                        Thêm sản phẩm
-                    </Button>
-                    <Popover
-                        open={openPopup}
-                        anchorEl={openPopup}
-                        onClose={() => setOpenPopup(false)}
-                        anchorOrigin={{
-                            vertical: 'center',
-                            horizontal: 'center',
-                        }}
-                        transformOrigin={{
-                            vertical: 'center',
-                            horizontal: 'center',
-                        }}
-                    >
-                        <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
-                            <Typography variant="h6" gutterBottom>
-                                Thêm sản phẩm
-                            </Typography>
-                            <TextField label="Tên sản phẩm"
-                                value={productName}
-                                onChange={handleProductNameChange}
-                                fullWidth sx={{ mb: 2 }} />
-                            <TextField label="Link Hình Ảnh"
-                                value={productImage}
-                                onChange={handleProductImageChange}
-                                fullWidth sx={{ mb: 2 }} />
-                            <TextField
-                                label="Phân loại Thú cưng"
-                                select
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={petTypeId}
-                                onChange={handlePetTypeIdChange}>
-                                <MenuItem value="1">Chó</MenuItem>
-                                <MenuItem value="2">Mèo</MenuItem>
-                                <MenuItem value="3">Chim</MenuItem>
-                                <MenuItem value="4">Cá</MenuItem>
-                                <MenuItem value="5">Không phân loại</MenuItem>
-                            </TextField>
-                            <TextField
-                                label="Phân loại Danh mục"
-                                select
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={category}
-                                onChange={handleCategoryChange}>
-                                <MenuItem value="Thức ăn">Thức ăn</MenuItem>
-                                <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
-                                <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
-                                <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
-                                <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
-                                <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
-                                <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
-                            </TextField>
-                            <Grid container alignItems="center" justifyContent="center" spacing={2}>
-                                <Grid item>
-                                    <IconButton onClick={handleDecreaseQuantity}>
-                                        <RemoveIcon />
-                                    </IconButton>
-                                </Grid>
-                                <Grid item>
-                                    <TextField
-                                        label="Số lượng"
-                                        type="number"
-                                        fullWidth
-                                        sx={{ mb: 2 }}
-                                        value={quantity}
-                                        onChange={handleQuantityChange}
-                                        InputProps={{
-                                            inputProps: {
-                                                min: 1, // Giá trị nhỏ nhất là 1
-                                            },
-                                        }}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <IconButton onClick={handleIncreaseQuantity}>
-                                        <AddIcon />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                            <TextField
-                                label="Giá"
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={productPrice}
-                                onChange={handleProductPriceChange}
-                                InputProps={{
-                                    endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-                                }}
-                            />
-                            <TextField label="Mô tả"
-                                value={productDescription}
-                                onChange={handleProductDescriptionChange}
-                                fullWidth sx={{ mb: 2 }} />
-                            <TextField
-                                label="Trạng thái"
-                                select
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={statuss}
-                                onChange={handleStatusChange}>
-                                <MenuItem value="0">Tạm ngừng</MenuItem>
-                                <MenuItem value="1">Đang bán</MenuItem>
-                            </TextField>
-
-                            <Button variant="contained" onClick={() => {
-                                handleCreateProduct();
-                                setOpenPopup(false);
-                            }}>
-                                Thêm sản phẩm
-                            </Button>
-                            <IconButton
-                                sx={{ position: 'absolute', top: 5, right: 5 }}
-                                onClick={() => setOpenPopup(null)}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Paper>
-                    </Popover>
+                   
                 </Stack>
-
+                
                 <Card>
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
@@ -501,16 +328,16 @@ export default function UserPage() {
                                     order={order}
                                     orderBy={orderBy}
                                     headLabel={TABLE_HEAD}
-                                    rowCount={PRODUCTLISTGETBYSHOPID.length}
+                                    rowCount={PETLISTGETBYSHOPID.length}
                                     numSelected={selected.length}
                                     onRequestSort={handleRequestSort}
                                     onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const { id, image, name, category, quantity, price, petTypeId, status, description } = row;
+                                        const { id, name, gender, image, price, petTypeId, status, description, address, shopId } = row;
                                         const selectedProduct = selected.indexOf(id) !== -1;
-
+                                        // const selectName = selected.indexOf(id) !== -1;
                                         return (
                                             <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedProduct}>
                                                 <TableCell padding="checkbox">
@@ -519,14 +346,33 @@ export default function UserPage() {
 
                                                 <TableCell component="th" scope="row" padding="none">
                                                     <Stack direction="row" alignItems="center" spacing={2}>
-                                                        <Avatar src={image} />
-                                                        <Typography variant="subtitle2" noWrap>
+                                                        <Typography variant="subtitle1" noWrap>
                                                             {name}
                                                         </Typography>
                                                     </Stack>
                                                 </TableCell>
-                                                <TableCell align="left">{category}</TableCell>
-                                                <TableCell align="left">{quantity}</TableCell>
+                                                {
+                                                    shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                                        const { id, name } = row;
+                                                        if (id === shopId)return (
+                                                            <TableCell align="left">{name}</TableCell>
+                                                        );
+                                                        return (
+                                                            null
+                                                        );
+                                                        }
+                                                    )
+                                                }
+                                                <TableCell align="left">
+                                                    <div style={{ width: '100px', height: '100px', overflow: 'hidden' }}>
+                                                        <img
+                                                            src={image}
+                                                            alt=""
+                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                        />
+                                                    </div>
+                                                </TableCell>
+
                                                 <TableCell align="left">{price}</TableCell>
                                                 <TableCell align="left">
                                                     {petTypeId === 1 && <Label color="success">Chó </Label>}
@@ -542,12 +388,12 @@ export default function UserPage() {
                                                     {status === 2 && <Label color="error">Ẩn </Label>}
                                                 </TableCell>
 
-
                                                 <TableCell align="right">
-                                                    <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, quantity, category, name, description, petTypeId, price, status)}>
+                                                    <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, gender, name, description, petTypeId, price, status, address)}>
                                                         <Iconify icon={'eva:more-vertical-fill'} />
                                                     </IconButton>
                                                 </TableCell>
+                                               
                                             </TableRow>
                                         );
                                     })}
@@ -588,7 +434,7 @@ export default function UserPage() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"
-                        count={PRODUCTLISTGETBYSHOPID.length}
+                        count={PETLISTGETBYSHOPID.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
@@ -615,148 +461,30 @@ export default function UserPage() {
                     },
                 }}
             >
-                <MenuItem onClick={handleEditPopup}>
-                    <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-                    Chỉnh sửa
-                </MenuItem>
-
+                {editedStatus === 2 && (
+                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+                        <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+                        Unban
+                    </MenuItem>
+                )}
 
                 {editedStatus === 1 && (
                     <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-                        Xóa
+                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+                        Ban
                     </MenuItem>
                 )}
 
                 {editedStatus === 0 && (
-                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
-                        Mở lại
+                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+                        Ban
                     </MenuItem>
                 )}
 
             </Popover>
 
-            <Popover
-                open={editPopup}
-                anchorEl={editPopup}
-                onClose={() => setEditPopup(false)}
-                anchorOrigin={{
-                    vertical: 'center',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'center',
-                    horizontal: 'center',
-                }}
-            >
-                <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
-                    <Typography variant="h6" gutterBottom>
-                        Sửa sản phẩm
-                    </Typography>
-                    <TextField label="Tên sản phẩm"
-                        value={editedName}
-                        onChange={handleEditProductNameChange}
-                        fullWidth sx={{ mb: 2 }} />
-                    <TextField label="Link Hình Ảnh"
-                        value={editedImage}
-                        onChange={handleEditProductImageChange}
-                        fullWidth sx={{ mb: 2 }} />
-                    <TextField
-                        label="Phân loại Thú cưng"
-                        select
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={editedPetTypeId}
-                        onChange={handleEditPetTypeIdChange}>
-                        <MenuItem value="1">Chó</MenuItem>
-                        <MenuItem value="2">Mèo</MenuItem>
-                        <MenuItem value="3">Chim</MenuItem>
-                        <MenuItem value="4">Cá</MenuItem>
-                        <MenuItem value="5">Không phân loại</MenuItem>
-                    </TextField>
-                    <TextField
-                        label="Phân loại Danh mục"
-                        select
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={editedCategory}
-                        onChange={handleEditCategoryChange}>
-                        <MenuItem value="Thức ăn">Thức ăn</MenuItem>
-                        <MenuItem value="Đồ chơi">Đồ chơi</MenuItem>
-                        <MenuItem value="Quần áo và phụ kiện">Quần áo và phụ kiện</MenuItem>
-                        <MenuItem value="Nghỉ ngơi và thư giãn">Nghỉ ngơi và thư giãn</MenuItem>
-                        <MenuItem value="Đào tạo và giáo dục">Đào tạo và giáo dục</MenuItem>
-                        <MenuItem value="Sức khỏe và phòng ngừa">Sức khỏe và phòng ngừa</MenuItem>
-                        <MenuItem value="Du lịch và di chuyển">Du lịch và di chuyển</MenuItem>
-                    </TextField>
-                    <Grid container alignItems="center" justifyContent="center" spacing={2}>
-                        <Grid item>
-                            <IconButton onClick={handleEditDecreaseQuantity}>
-                                <RemoveIcon />
-                            </IconButton>
-                        </Grid>
-                        <Grid item>
-                            <TextField
-                                label="Số lượng"
-                                type="number"
-                                fullWidth
-                                sx={{ mb: 2 }}
-                                value={editedQuantity}
-                                onChange={handleEditQuantityChange}
-                                InputProps={{
-                                    inputProps: {
-                                        min: 1, // Giá trị nhỏ nhất là 1
-                                    },
-                                }}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <IconButton onClick={handleEditIncreaseQuantity}>
-                                <AddIcon />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                    <TextField
-                        label="Giá"
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={editedPrice}
-                        onChange={handleEditProductPriceChange}
-                        InputProps={{
-                            endAdornment: <InputAdornment position="end">VNĐ</InputAdornment>,
-                        }}
-                    />
-                    <TextField label="Mô tả"
-                        value={editedDescription}
-                        onChange={handleEditProductDescriptionChange}
-                        fullWidth sx={{ mb: 2 }} />
-                    <TextField
-                        label="Trạng thái"
-                        select
-                        fullWidth
-                        sx={{ mb: 2 }}
-                        value={editedStatus}
-                        onChange={handleEditStatusChange}>
-                        <MenuItem value="0">Tạm ngừng</MenuItem>
-                        <MenuItem value="1">Đang bán</MenuItem>
-                    </TextField>
-
-                    <Button variant="contained" onClick={() => {
-                        handleEditProduct();
-                        setEditPopup(false);
-                    }}>
-                        Sửa sản phẩm
-                    </Button>
-                    <IconButton
-                        sx={{ position: 'absolute', top: 5, right: 5 }}
-                        onClick={() => setEditPopup(null)}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-
-                </Paper>
-            </Popover>
+           
 
         </>
     );
