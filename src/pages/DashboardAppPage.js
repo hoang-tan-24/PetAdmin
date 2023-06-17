@@ -4,16 +4,34 @@ import { useTheme } from '@mui/material/styles';
 import { Grid, Container, Typography } from '@mui/material';
 // components
 // sections
+import { useState } from 'react';
 import {
   AppCurrentVisits,
   AppWebsiteVisits,
   AppWidgetSummary,
 } from '../sections/@dashboard/app';
 
+import useGgPf from '../components/getAPI/getGoogleLogin';
+
+
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+  // const profile = JSON.parse(localStorage.getItem('profile'));
+  // const [profile, setProfile] = useState([]);
+
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  // console.log(user)
+  // const getProfile = useGetGoogleProfile(user.access_token);
+  // const res = getGoogleProfile
+  // console.log(res)
+  // const profile = JSON.parse(localStorage.getItem('profile'));
+  const profile = useGgPf(user.access_token)
+  // setProfile(getProfile)
+  // console.log(profile)
+  localStorage.setItem('profile', JSON.stringify(profile));
 
   return (
     <>
@@ -23,7 +41,7 @@ export default function DashboardAppPage() {
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
-          Xin chào Hahino24
+          Xin chào {profile.name}
         </Typography>
 
         <Grid container spacing={3}>
@@ -48,36 +66,36 @@ export default function DashboardAppPage() {
               title="Website Visits"
               subheader="(+43%) than last year"
               chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
+                '01/01/2023',
+                '02/01/2023',
+                '03/01/2023',
+                '04/01/2023',
+                '05/01/2023',
+                '06/01/2023',
+                '07/01/2023',
+                '08/01/2023',
+                '09/01/2023',
+                '10/01/2023',
+                '11/01/2023',
               ]}
               chartData={[
                 {
                   name: 'Team A',
                   type: 'column',
                   fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
+                  data: [0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 0],
                 },
                 {
                   name: 'Team B',
                   type: 'area',
                   fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
+                  data: [0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 0],
                 },
                 {
                   name: 'Team C',
                   type: 'line',
                   fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
+                  data: [0, 0, 0, 0, 0, 0, 0, 5, 0, 7, 0],
                 },
               ]}
             />

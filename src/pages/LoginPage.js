@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+
+import { GoogleLogin, googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -9,6 +12,9 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+import getGoogleProfile from '../components/getAPI/getGoogleLogin';
+
+
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +23,7 @@ const StyledRoot = styled('div')(({ theme }) => ({
     display: 'flex',
   },
 }));
+
 
 const StyledSection = styled('div')(({ theme }) => ({
   width: '100%',
@@ -38,11 +45,47 @@ const StyledContent = styled('div')(({ theme }) => ({
   padding: theme.spacing(12, 0),
 }));
 
+
+
+
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
 
+
+  const [user, setUser] = useState([]);
+  const [profile, setProfile] = useState([]);
+
+
+  // const getProfile = useGetGoogleProfile(user.access_token);
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log('Login Success:', codeResponse);
+      setUser(codeResponse);
+      // const res = getProfile
+      // console.log(res)
+      // setProfile(res)
+      // Storing user data
+      // localStorage.setItem('profile', JSON.stringify(profile));
+      localStorage.setItem('user', JSON.stringify(user));
+      // Retrieving user data
+      // const profile = JSON.parse(localStorage.getItem('profile'));
+      if (user.access_token != null)
+
+
+
+
+        window.location.href = '/dashboard/app';
+    },
+    onError: (error) => console.log('Login Failed:', error)
+  });
+
+  // log out function to log the user out of google and set the profile array to null
+  const logOut = () => {
+    googleLogout();
+    setProfile("null");
+  };
   return (
     <>
       <Helmet>
@@ -74,9 +117,11 @@ export default function LoginPage() {
             </Typography>
 
             <Stack direction="row" spacing={2}>
-              <Button fullWidth size="large " color="inherit" variant="outlined">
+
+              <Button fullWidth size="large " color="inherit" variant="outlined" onClick={() => login()}>
                 <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
               </Button>
+              <button onClick={logOut}>Log out</button>
             </Stack>
 
             <Divider sx={{ my: 3 }}>
