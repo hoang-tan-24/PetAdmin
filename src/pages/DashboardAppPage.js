@@ -12,6 +12,7 @@ import {
 } from '../sections/@dashboard/app';
 
 import useGgPf from '../components/getAPI/getGoogleLogin';
+import { shopLogin } from '../components/postAPI/shopLogin';
 
 
 // ----------------------------------------------------------------------
@@ -21,6 +22,9 @@ export default function DashboardAppPage() {
   const user = JSON.parse(localStorage.getItem('user'));
   const profile = useGgPf(user.access_token)
   localStorage.setItem('profile', JSON.stringify(profile));
+  const callAPIShopLogin = shopLogin(profile.email)
+  // localStorage.setItem('employee', JSON.stringify(employee));
+  // const employee = JSON.parse(localStorage.getItem('employee'));
 
   return (
     <>
