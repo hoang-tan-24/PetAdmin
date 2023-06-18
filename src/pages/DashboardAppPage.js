@@ -18,19 +18,8 @@ import useGgPf from '../components/getAPI/getGoogleLogin';
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-  // const profile = JSON.parse(localStorage.getItem('profile'));
-  // const [profile, setProfile] = useState([]);
-
-
   const user = JSON.parse(localStorage.getItem('user'));
-  // console.log(user)
-  // const getProfile = useGetGoogleProfile(user.access_token);
-  // const res = getGoogleProfile
-  // console.log(res)
-  // const profile = JSON.parse(localStorage.getItem('profile'));
   const profile = useGgPf(user.access_token)
-  // setProfile(getProfile)
-  // console.log(profile)
   localStorage.setItem('profile', JSON.stringify(profile));
 
   return (
