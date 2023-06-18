@@ -59,8 +59,8 @@ export default function LoginPage() {
       setUser(codeResponse);
       console.log("lay duoc user")
 
-      localStorage.setItem('user', JSON.stringify(user));
-      console.log("user khac null")
+      // localStorage.setItem('user', JSON.stringify(user));
+      // console.log("user khac null")
 
       // if (user.access_token != null) {
       //   console.log("user khac null")
