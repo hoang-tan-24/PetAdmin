@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-
-import { GoogleLogin, googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -12,7 +11,7 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
-import getGoogleProfile from '../components/getAPI/getGoogleLogin';
+
 
 
 
@@ -52,39 +51,38 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
-
-
   const [user, setUser] = useState([]);
-  const [profile, setProfile] = useState([]);
 
-
-  // const getProfile = useGetGoogleProfile(user.access_token);
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log('Login Success:', codeResponse);
       setUser(codeResponse);
-      // const res = getProfile
-      // console.log(res)
-      // setProfile(res)
-      // Storing user data
-      // localStorage.setItem('profile', JSON.stringify(profile));
+      console.log("lay duoc user")
+
       localStorage.setItem('user', JSON.stringify(user));
-      // Retrieving user data
-      // const profile = JSON.parse(localStorage.getItem('profile'));
-      if (user.access_token != null)
+      console.log("user khac null")
 
+      // if (user.access_token != null) {
+      //   console.log("user khac null")
+      //   window.location.href = '/dashboard/app';
+      // }
 
-
-
-        window.location.href = '/dashboard/app';
     },
     onError: (error) => console.log('Login Failed:', error)
   });
 
-  // log out function to log the user out of google and set the profile array to null
+  useEffect(() => {
+    if (user && user.access_token) {
+      console.log('User is logged in:', user);
+      localStorage.setItem('user', JSON.stringify(user));
+      window.location.href = '/dashboard/app';
+    }
+  }, [user]);
+
   const logOut = () => {
     googleLogout();
-    setProfile("null");
+    localStorage.setItem('user', JSON.stringify(null));
+    localStorage.setItem('profile', JSON.stringify(null));
   };
   return (
     <>
