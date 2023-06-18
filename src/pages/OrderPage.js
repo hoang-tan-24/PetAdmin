@@ -4,15 +4,17 @@ import { sentenceCase } from 'change-case';
 import { useState } from 'react';
 // @mui
 import {
+  DialogContentText,
+  DialogContent,
+  Dialog,
+  DialogTitle,
   Card,
   Table,
   Stack,
   Paper,
   Avatar,
-  Popover,
   Checkbox,
   TableRow,
-  MenuItem,
   TableBody,
   TableCell,
   Container,
@@ -28,7 +30,7 @@ import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
-import USERLIST from '../_mock/user';
+import ORDERLIST from '../_mock/user';
 
 // ----------------------------------------------------------------------
 
@@ -88,12 +90,14 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleOpenMenu = (event) => {
-    setOpen(event.currentTarget);
+  const [showOrderDetail, setShowOrderDetail] = useState(false);
+
+  const handleClickDetail = () => {
+    setShowOrderDetail(true);
   };
 
-  const handleCloseMenu = () => {
-    setOpen(null);
+  const handleOpenMenu = (event) => {
+    setOpen(event.currentTarget);
   };
 
   const handleRequestSort = (event, property) => {
@@ -104,18 +108,18 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.nameOrders);
+      const newSelecteds = ORDERLIST.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, nameOrders) => {
-    const selectedIndex = selected.indexOf(nameOrders);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, nameOrders);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -124,6 +128,10 @@ export default function UserPage() {
       newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
     setSelected(newSelected);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -140,9 +148,9 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ORDERLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(ORDERLIST, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -163,28 +171,45 @@ export default function UserPage() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={ORDERLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, nameOrders, buyer, quantity, total, address, status, avatarUrl } = row;
-                    const selectedUser = selected.indexOf(nameOrders) !== -1;
+                    const { id, nameOrders, detail, buyer, quantity, total, address, status, image } = row;
+                    const selectedOrder = selected.indexOf(id) !== -1;
 
                     return (
-                      <TableRow hover key={id} tabIndex={-1} quantity="checkbox" selected={selectedUser}>
+                      <TableRow hover key={id} tabIndex={-1} quantity="checkbox" selected={selectedOrder}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, nameOrders)} />
+                          <Checkbox checked={selectedOrder} onChange={(event) => handleClick(event, id)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={nameOrders} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
+                            <Avatar alt={nameOrders} src={image} />
+                            <Typography variant="subtitle2" noWrap onClick={handleClickDetail}>
                               {nameOrders}
                             </Typography>
+                            {showOrderDetail && (
+                              <>
+                                <Dialog open={open} onClose={handleClose}>
+                                  <DialogTitle>{nameOrders}</DialogTitle>
+                                  <DialogContent>
+                                    <img src={image} alt="Product" />
+                                    <DialogContentText>
+                                      Tổng giá: {total}
+                                    </DialogContentText>
+                                    <DialogContentText>
+                                      {detail}
+                                    </DialogContentText>
+                                  </DialogContent>
+                                </Dialog>
+                              </>
+                            )}
+
                           </Stack>
                         </TableCell>
 
@@ -244,7 +269,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={ORDERLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -252,35 +277,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Chỉnh sửa
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Xóa
-        </MenuItem>
-      </Popover>
     </>
   );
 }

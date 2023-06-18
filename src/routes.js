@@ -17,6 +17,7 @@ import SystemServicePage from './pages/SystemServicePage';
 import SystemShopPage from './pages/SystemShopPage';
 import SystemUserPage from './pages/SystemUserPage';
 import SystemDashboardPage from './pages/SystemDashboardPage';
+import ProfilePage from './pages/ProfilePage';
 
 
 
@@ -40,6 +41,7 @@ export default function Router() {
         { path: 'service', element: <ServicePage /> },
         { path: 'calendar', element: <Calendar /> },
         { path: 'pets', element: <PetPage /> },
+        { path: 'profile', element: <ProfilePage /> },
         { path: 'system/pets', element: <SystemPetPage /> },
         { path: 'system/products', element: <SystemProductPage /> },
         { path: 'system/services', element: <SystemServicePage /> },
@@ -64,7 +66,7 @@ export default function Router() {
     {
       element: <SimpleLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
+        { element: <Navigate to="/login" />, index: true },
         { path: '404', element: <Page404 /> },
         { path: '*', element: <Navigate to="/404" /> },
       ],

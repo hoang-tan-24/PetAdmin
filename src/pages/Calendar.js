@@ -28,39 +28,8 @@ const Calendar = () => {
         viewType: "Day",
         durationBarVisible: false,
         timeRangeSelectedHandling: "Enabled",
-        onTimeRangeSelected: async args => {
-            const dp = calendarRef.current.control;
-            const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-            dp.clearSelection();
-            if (!modal.result) { return; }
-            dp.events.add({
-                start: args.start,
-                end: args.end,
-                id: DayPilot.guid(),
-                text: modal.result,
-                backColor: getRandomColor()
-            });
-        },
-        eventDeleteHandling: "Update",
-        onEventClick: async args => {
-            const dp = calendarRef.current.control;
-            const modal = await DayPilot.Modal.prompt("Update event text:", args.e.text());
-            if (!modal.result) { return; }
-            const { e } = args.e;
-            e.data.text = modal.result;
-            dp.events.update(e);
-        },
     });
 
-
-    const getRandomColor = () => {
-        const letters = "0123456789ABCDEF";
-        let color = "#";
-        for (let i = 0; i < 6; i += 1) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    };
 
     return (
         <div style={styles.wrap}>
@@ -70,11 +39,6 @@ const Calendar = () => {
                     showMonths={1}
                     skipMonths={1}
                     startDate={startDate}
-                    onTimeRangeSelected={args => {
-                        calendarRef.current.control.update({
-                            startDate: args.day
-                        });
-                    }}
                 />
             </div>
             <div style={styles.main}>

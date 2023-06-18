@@ -33,19 +33,9 @@ const navConfig = [
     icon: icon('ic_cart'),
   },
   {
-    title: 'Đăng nhập',
-    path: '/login',
-    icon: icon('ic_lock'),
-  },
-  {
     title: 'Lịch sử dụng dịch vụ',
     path: '/dashboard/calendar',
     icon: icon('ic_calendar'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic_disabled'),
   },
   {
     title: 'System Users',

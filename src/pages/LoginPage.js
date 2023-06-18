@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { GoogleLogin, googleLogout, useGoogleLogin } from '@react-oauth/google';
+import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { styled } from '@mui/material/styles';
@@ -12,7 +12,6 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
-import getGoogleProfile from '../components/getAPI/getGoogleLogin';
 
 
 
@@ -55,7 +54,6 @@ export default function LoginPage() {
 
 
   const [user, setUser] = useState([]);
-  const [profile, setProfile] = useState([]);
 
 
   // const getProfile = useGetGoogleProfile(user.access_token);
@@ -81,10 +79,17 @@ export default function LoginPage() {
     onError: (error) => console.log('Login Failed:', error)
   });
 
+  useEffect(() => {
+    if (user && user.access_token) {
+      console.log('User is logged in:', user);
+      localStorage.setItem('user', JSON.stringify(user));
+      window.location.href = '/dashboard/app';
+    }
+  }, [user]);
+
   // log out function to log the user out of google and set the profile array to null
   const logOut = () => {
     googleLogout();
-    setProfile("null");
   };
   return (
     <>

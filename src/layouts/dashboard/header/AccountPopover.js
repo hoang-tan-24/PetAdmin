@@ -1,12 +1,10 @@
 import { useState } from 'react';
-// @mui
 import { googleLogout } from '@react-oauth/google';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
-// mocks_
-import account from '../../../_mock/account';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate từ react-router-dom
+import useGgPf from '../../../components/getAPI/getGoogleLogin';
 
-// ----------------------------------------------------------------------
 
 const MENU_OPTIONS = [
   {
@@ -23,11 +21,10 @@ const MENU_OPTIONS = [
   },
 ];
 
-// ----------------------------------------------------------------------
-
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const profile = JSON.parse(localStorage.getItem('profile'));
+  const navigate = useNavigate(); // Định nghĩa useNavigate
+
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
   };
@@ -35,10 +32,32 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
-  const handleLogout = () => {
+
+  const logOut = () => {
     googleLogout();
     window.location.href = '/login';
-  }
+  };
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const profile = useGgPf(user.access_token)
+  localStorage.setItem('profile', JSON.stringify(profile));
+
+  const handleMenuItemClick = (index) => {
+    const menuItemLabel = MENU_OPTIONS[index].label;
+
+    if (menuItemLabel === 'Home') {
+      // Navigate to the Home page
+      navigate('/');
+    } else if (menuItemLabel === 'Profile') {
+      // Navigate to the Profile page
+      navigate('/dashboard/profile');
+    } else if (menuItemLabel === 'Settings') {
+      // Navigate to the Settings page
+      navigate('/dashboard/settings');
+    }
+
+    handleClose();
+  };
 
   return (
     <>
@@ -93,8 +112,8 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
+          {MENU_OPTIONS.map((option, index) => (
+            <MenuItem key={option.label} onClick={() => handleMenuItemClick(index)}>
               {option.label}
             </MenuItem>
           ))}
@@ -102,10 +121,11 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleLogout} sx={{ m: 1 }}>
+        <MenuItem onClick={logOut} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>
     </>
   );
 }
+
