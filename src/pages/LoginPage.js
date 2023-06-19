@@ -119,7 +119,6 @@ export default function LoginPage() {
               <Button fullWidth size="large " color="inherit" variant="outlined" onClick={() => login()}>
                 <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
               </Button>
-              <button onClick={logOut}>Log out</button>
             </Stack>
 
             <Divider sx={{ my: 3 }}>
