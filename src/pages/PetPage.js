@@ -133,6 +133,13 @@ export default function UserPage() {
     const [editedImage, setEditedImage] = useState('image');
     const [editedAddress, setEditedAddress] = useState('');
 
+
+    const employee = JSON.parse(localStorage.getItem('employee'));
+    if (employee && employee.shopId !== shopId) {
+        console.log("employee co shop id la : ", employee.shopId)
+        setShopId(employee.shopId)
+    }
+
     // lay duoc roi
     const PETLISTGETBYSHOPID = usePetListByShopId(shopId);
 
