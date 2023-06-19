@@ -53,16 +53,19 @@ const useGgPf = (userAccessToken) => {
                 });
                 const data = response.data;
                 setProfile(data);
+                localStorage.setItem('profile', JSON.stringify(data));
+
                 console.log('Get success:', data)
+                return data;
             } catch (error) {
                 console.error('Error fetching:', error);
                 setProfile([]);
+                return profile;
             }
         };
 
         fetch();
     }, []);
-
     return profile;
 };
 export default useGgPf;
