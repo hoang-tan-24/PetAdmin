@@ -21,7 +21,7 @@ export default function DashboardAppPage() {
   const theme = useTheme();
   const user = JSON.parse(localStorage.getItem('user'));
   const profile = useGgPf(user.access_token)
-  localStorage.setItem('profile', JSON.stringify(profile));
+  // localStorage.setItem('profile', JSON.stringify(profile));
   const callAPIShopLogin = shopLogin(profile.email)
   // localStorage.setItem('employee', JSON.stringify(employee));
   // const employee = JSON.parse(localStorage.getItem('employee'));

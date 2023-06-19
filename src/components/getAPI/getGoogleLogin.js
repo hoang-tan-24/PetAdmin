@@ -53,7 +53,8 @@ const useGgPf = (userAccessToken) => {
                 });
                 const data = response.data;
                 setProfile(data);
-                console.log('Get success:', data)
+                localStorage.setItem('profile', JSON.stringify(profile));
+                console.log('Get success google api profile:', data)
             } catch (error) {
                 console.error('Error fetching:', error);
                 setProfile([]);

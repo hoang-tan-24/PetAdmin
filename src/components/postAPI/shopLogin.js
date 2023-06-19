@@ -4,7 +4,7 @@ const shopLogin = async (email) => {
     try {
         const response = await axios.post(`https://localhost:7196/api/Employee/shopLogin?email=${email}`);
         const data = response.data;
-        console.log(data);
+        console.log("shop login api called success", data);
         localStorage.setItem('employee', JSON.stringify(data));
         return data;
     } catch (error) {
