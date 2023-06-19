@@ -119,7 +119,7 @@ export default function UserPage() {
     const [shopId, setShopId] = useState(1);
     const [address, setAddress] = useState('');
 
-    // edit 
+    // edit
     const [editedId, setEditedId] = useState(1);
 
     const [updatedStatus, setUpdatedStatus] = useState(0);
@@ -345,7 +345,6 @@ export default function UserPage() {
             <Helmet>
                 <title>Product</title>
             </Helmet>
-
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
@@ -366,8 +365,13 @@ export default function UserPage() {
                             vertical: 'center',
                             horizontal: 'center',
                         }}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
                     >
-                        <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+                        <Paper sx={{ p: 2, maxWidth: 800, textAlign: 'center' }}>
                             <Typography variant="h6" gutterBottom>
                                 Thêm thú cưng
                             </Typography>
@@ -399,8 +403,8 @@ export default function UserPage() {
                                 sx={{ mb: 2 }}
                                 value={gender}
                                 onChange={handleGenderChange}>
-                                <MenuItem value="Nam (Đực)">Nam (Đực)</MenuItem>
-                                <MenuItem value="Nữ (Cái)">Nữ (Cái)</MenuItem>
+                                <MenuItem value="Nam (Đực)">Đực</MenuItem>
+                                <MenuItem value="Nữ (Cái)">Cái</MenuItem>
                                 <MenuItem value="Không phân loại">Không phân loại</MenuItem>
                             </TextField>
                             <TextField
@@ -615,7 +619,7 @@ export default function UserPage() {
                     horizontal: 'center',
                 }}
             >
-                <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+                <Paper sx={{ p: 2, maxWidth: 800, textAlign: 'center' }}>
                     <Typography variant="h6" gutterBottom>
                         Sửa thú cưng
                     </Typography>

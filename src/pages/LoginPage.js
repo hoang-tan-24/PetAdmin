@@ -13,8 +13,6 @@ import Iconify from '../components/iconify';
 import { LoginForm } from '../sections/auth/login';
 
 
-
-
 // ----------------------------------------------------------------------
 
 const StyledRoot = styled('div')(({ theme }) => ({
@@ -78,6 +76,7 @@ export default function LoginPage() {
       window.location.href = '/dashboard/app';
     }
   }, [user]);
+
 
   const logOut = () => {
     googleLogout();

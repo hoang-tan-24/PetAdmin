@@ -19,7 +19,7 @@ const randomProductName = () => {
 
 const users = [...Array(24)].map((_, index) => ({
   id: index + 1,
-  avatarUrl: `/assets/images/avatars/avatar_${index + 1}.jpg`,
+  image: `/assets/images/avatars/avatar_${index + 1}.jpg`,
   nameOrders: randomProductName(),
   buyer: `Người nhận ${index + 1}`,
   quantity: Math.floor(Math.random() * 100) + 1,

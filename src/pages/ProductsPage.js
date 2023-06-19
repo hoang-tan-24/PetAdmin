@@ -117,19 +117,19 @@ export default function UserPage() {
   const [productImage, setProductImage] = useState('');
   const [productShopId, setProductShopId] = useState(1);
 
-  // edit 
+  // edit
   const [editedId, setEditedId] = useState(1);
 
   const [updatedStatus, setUpdatedStatus] = useState(0);
 
-  const [editedName, setEditedName] = useState('name');
-  const [editedCategory, setEditedCategory] = useState('category');
-  const [editedQuantity, setEditedQuantity] = useState(0);
+  const [editedName, setEditedName] = useState(productName);
+  const [editedCategory, setEditedCategory] = useState(category);
+  const [editedQuantity, setEditedQuantity] = useState(quantity);
   const [editedPrice, setEditedPrice] = useState(0);
   const [editedPetTypeId, setEditedPetTypeId] = useState(5);
   const [editedStatus, setEditedStatus] = useState(0);
-  const [editedDescription, setEditedDescription] = useState('description');
-  const [editedImage, setEditedImage] = useState('image');
+  const [editedDescription, setEditedDescription] = useState('productDescription');
+  const [editedImage, setEditedImage] = useState('productImage');
 
   // lay duoc roi
   const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
@@ -272,16 +272,18 @@ export default function UserPage() {
   };
 
   const handleQuantityChange = (event) => {
-    const value = event.target;
-    setQuantity(value);
+    const value = parseInt(event.target.value, 10);
+    if (!Number.isNaN(value)) {
+      setQuantity(value);
+    }
   };
 
   const handleIncreaseQuantity = () => {
-    setQuantity(quantity + 1);
+    setQuantity((prevQuantity) => prevQuantity + 1);
   };
   const handleDecreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
+    if (quantity > 0) {
+      setQuantity((prevQuantity) => prevQuantity - 1);
     }
   };
 
@@ -307,12 +309,18 @@ export default function UserPage() {
   }
 
   const handleEditIncreaseQuantity = () => {
-    setEditedQuantity(editedQuantity + 1);
+    setEditedQuantity((prevQuantity) => prevQuantity + 1);
+  };
+  const handleEditDecreaseQuantity = () => {
+    if (editedQuantity > 0) {
+      setEditedQuantity((prevQuantity) => prevQuantity - 1);
+    }
   };
 
-  const handleEditDecreaseQuantity = () => {
-    if (editedQuantity > 1) {
-      setEditedQuantity(editedQuantity - 1);
+  const handleEditQuantityChange = (event) => {
+    const value = parseInt(event.target.value, 10);
+    if (!Number.isNaN(value)) {
+      setEditedQuantity(value);
     }
   };
 
@@ -342,11 +350,6 @@ export default function UserPage() {
 
   const handleEditProductImageChange = (event) => {
     setEditedImage(event.target.value);
-  };
-
-  const handleEditQuantityChange = (event) => {
-    const value = event.target;
-    setEditedQuantity(value);
   };
 
 
@@ -437,11 +440,6 @@ export default function UserPage() {
                     sx={{ mb: 2 }}
                     value={quantity}
                     onChange={handleQuantityChange}
-                    InputProps={{
-                      inputProps: {
-                        min: 1, // Giá trị nhỏ nhất là 1
-                      },
-                    }}
                   />
                 </Grid>
                 <Grid item>

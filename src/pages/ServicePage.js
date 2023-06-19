@@ -34,8 +34,6 @@ import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
 
 import useServiceListByShopId from '../components/getAPI/getServiceListByShopId';
 import { createService } from '../components/postAPI/createService';
@@ -183,7 +181,7 @@ export default function UserPage() {
     setOpenPopup(true);
   };
 
- const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
+  const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
     setOpen(event.currentTarget);
     setEditedName(name);
     setEditedCategory(categoryId);
@@ -279,20 +277,23 @@ export default function UserPage() {
       setMaxSlot(maxSlot - 1);
     }
   };
+
   const handleDurationChange = (event) => {
-    const value = event.target;
-    setDuration(value);
+    const value = parseInt(event.target.value, 10);
+    if (!Number.isNaN(value)) {
+      setDuration(value);
+    }
   };
 
   const handleIncreaseDuration = () => {
-    setDuration(duration + 1);
+    setDuration((prevDuration) => prevDuration + 1);
   };
-
   const handleDecreaseDuration = () => {
-    if (duration > 1) {
-      setDuration(duration - 1);
+    if (duration > 0) {
+      setDuration((prevDuration) => prevDuration - 1);
     }
   };
+
   // edit
   const handleEditService = () => {
     const serviceData = {
@@ -403,8 +404,13 @@ export default function UserPage() {
               vertical: 'center',
               horizontal: 'center',
             }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-             <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
+            <Paper sx={{ p: 2, minWidth: 300, textAlign: 'center' }}>
               <Typography variant="h6" gutterBottom>
                 Thêm dịch vụ
               </Typography>
@@ -481,11 +487,6 @@ export default function UserPage() {
                     sx={{ mb: 2 }}
                     value={duration}
                     onChange={handleDurationChange}
-                    InputProps={{
-                      inputProps: {
-                        min: 1, // Giá trị nhỏ nhất là 1
-                      },
-                    }}
                   />
                 </Grid>
                 <Grid item>
@@ -591,7 +592,7 @@ export default function UserPage() {
                           {status === 2 && <Label color="error">Ẩn </Label>}
                         </TableCell>
 
-                        
+
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status)}>
