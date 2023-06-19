@@ -82,6 +82,7 @@ export default function LoginPage() {
     googleLogout();
     localStorage.setItem('user', JSON.stringify(null));
     localStorage.setItem('profile', JSON.stringify(null));
+    localStorage.setItem('employee', JSON.stringify(null));
   };
   return (
     <>
