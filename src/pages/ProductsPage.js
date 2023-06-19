@@ -131,6 +131,13 @@ export default function UserPage() {
   const [editedDescription, setEditedDescription] = useState('productDescription');
   const [editedImage, setEditedImage] = useState('productImage');
 
+
+  const employee = JSON.parse(localStorage.getItem('employee'));
+  if (employee && employee.shopId !== productShopId) {
+    console.log("employee co shop id la : ", employee.shopId)
+    setProductShopId(employee.shopId)
+  }
+
   // lay duoc roi
   const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
 

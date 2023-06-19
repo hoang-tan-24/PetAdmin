@@ -128,6 +128,14 @@ export default function UserPage() {
   const [updatedStatus, setUpdatedStatus] = useState(0);
   const [editedStatus, setEditedStatus] = useState(0);
 
+
+  const employee = JSON.parse(localStorage.getItem('employee'));
+  if (employee && employee.shopId !== serviceShopId) {
+    console.log("employee co shop id la : ", employee.shopId)
+    setServiceShopId(employee.shopId)
+  }
+
+
   const serviceListGetByShopId = useServiceListByShopId(serviceShopId);
 
   const handleCreateService = async (event) => {
