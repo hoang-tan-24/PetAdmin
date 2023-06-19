@@ -35,6 +35,8 @@ export default function AccountPopover() {
 
   const logOut = () => {
     googleLogout();
+    localStorage.setItem('user', JSON.stringify(null));
+    localStorage.setItem('profile', JSON.stringify(null));
     window.location.href = '/login';
   };
 

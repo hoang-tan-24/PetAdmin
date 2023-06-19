@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Helmet } from 'react-helmet-async';
 // @mui
@@ -12,7 +11,6 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
-
 
 
 // ----------------------------------------------------------------------
@@ -51,30 +49,22 @@ const StyledContent = styled('div')(({ theme }) => ({
 
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
-
-
   const [user, setUser] = useState([]);
 
-
-  // const getProfile = useGetGoogleProfile(user.access_token);
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log('Login Success:', codeResponse);
       setUser(codeResponse);
-      // const res = getProfile
-      // console.log(res)
-      // setProfile(res)
-      // Storing user data
-      // localStorage.setItem('profile', JSON.stringify(profile));
-      localStorage.setItem('user', JSON.stringify(user));
-      // Retrieving user data
-      // const profile = JSON.parse(localStorage.getItem('profile'));
-      if (user.access_token != null)
+      console.log("lay duoc user")
 
+      // localStorage.setItem('user', JSON.stringify(user));
+      // console.log("user khac null")
 
+      // if (user.access_token != null) {
+      //   console.log("user khac null")
+      //   window.location.href = '/dashboard/app';
+      // }
 
-
-        window.location.href = '/dashboard/app';
     },
     onError: (error) => console.log('Login Failed:', error)
   });
@@ -87,9 +77,11 @@ export default function LoginPage() {
     }
   }, [user]);
 
-  // log out function to log the user out of google and set the profile array to null
+
   const logOut = () => {
     googleLogout();
+    localStorage.setItem('user', JSON.stringify(null));
+    localStorage.setItem('profile', JSON.stringify(null));
   };
   return (
     <>
