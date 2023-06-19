@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { Box, Typography, Avatar, Grid, Button, Popover, TextField } from '@mui/material';
 
-const profile = JSON.parse(localStorage.getItem('profile'));
+
 
 const ProfilePage = () => {
+
+    const profile = JSON.parse(localStorage.getItem('profile'));
+    const employee = JSON.parse(localStorage.getItem('employee'));
+
     const [open, setOpen] = useState(false);
     const [editedDisplayName, setEditedDisplayName] = useState(profile.name);
-    const [editedPhone, seteditedPhone] = useState(profile.phone);
-    const [editedNameShop, setEditedNameShop] = useState(profile.nameShop);
+    const [editedPhone, seteditedPhone] = useState(employee.shopPhone);
+    const [editedNameShop, setEditedNameShop] = useState(employee.shopName);
 
     const handleClick = () => {
         setOpen(true);
@@ -37,13 +41,13 @@ const ProfilePage = () => {
                             {profile.name}
                         </Typography>
                         <Typography variant="body1" sx={{ color: 'text.secondary' }} gutterBottom>
-                            {profile.email}
+                            {employee.userEmail}
                         </Typography>
                         <Typography variant="body1" sx={{ color: 'text.secondary' }} gutterBottom>
-                            {profile.phone}
+                            {employee.shopPhone}
                         </Typography>
                         <Typography variant="body1" sx={{ color: 'text.secondary' }} gutterBottom>
-                            {profile.nameShop}
+                            {employee.shopName}
                         </Typography>
                         <Button variant="contained" color="primary" onClick={handleClick}>
                             Edit Profile
