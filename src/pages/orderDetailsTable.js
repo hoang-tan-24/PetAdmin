@@ -3,15 +3,15 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Avatar } from '@mui/m
 
 const OrderDetailsTable = ({ orderDetails }) => {
     return (
-        <Table>
-            <TableHead>
-                <TableRow>
-                    <TableCell>Image</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Price</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Total Price</TableCell>
+        <Table style={{ backgroundColor: '#ffe7c4' }}>
+            <TableHead >
+                <TableRow >
+                    <TableCell>Hình ảnh</TableCell>
+                    <TableCell>Tên</TableCell>
+                    <TableCell>Ghi chú</TableCell>
+                    <TableCell>Giá</TableCell>
+                    <TableCell>Số lượng</TableCell>
+                    <TableCell>Tổng cộng</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>

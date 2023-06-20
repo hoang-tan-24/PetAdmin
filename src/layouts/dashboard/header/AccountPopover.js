@@ -7,18 +7,18 @@ import useGgPf from '../../../components/getAPI/getGoogleLogin';
 
 
 const MENU_OPTIONS = [
+  // {
+  //   label: 'Trang chủ',
+  //   icon: 'eva:home-fill',
+  // },
   {
-    label: 'Home',
-    icon: 'eva:home-fill',
-  },
-  {
-    label: 'Profile',
+    label: 'Thông tin cửa hàng',
     icon: 'eva:person-fill',
   },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-  },
+  // {
+  //   label: 'Cài đặt',
+  //   icon: 'eva:settings-2-fill',
+  // },
 ];
 
 export default function AccountPopover() {

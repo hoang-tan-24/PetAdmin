@@ -36,6 +36,7 @@ import ORDERLIST from '../_mock/user';
 import useOrderListByShopId from '../components/getAPI/getOrderListByShopId';
 import useUserById from '../components/getAPI/getUserById';
 import OrderDetailsTable from './orderDetailsTable';
+import { updateOrderStatus } from '../components/putAPI/updateOrderStatus';
 
 // ----------------------------------------------------------------------
 
@@ -99,13 +100,13 @@ export default function UserPage() {
 
   const [openPopup, setOpenPopup] = useState(false);
   // order
-  const [id, setId] = useState(0);
+  const [id, setId] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
   const [address, setAddress] = useState('');
   const [userId, setUserId] = useState(0);
   const [email, setEmail] = useState('');
   const [orderedDate, setOrderedDate] = useState(0);
-  const [status, setStatus] = useState(0);
+  const [status, setStatus] = useState(1);
   const [shopId, setShopId] = useState(1);
   // orderdetail
 
@@ -128,10 +129,19 @@ export default function UserPage() {
     setShowOrderDetail(true);
   };
 
-  const handleOpenMenu = (event, orderDetail) => {
+  const handleOpenMenu = (event, orderDetail, id, status) => {
     setOrderDetail(orderDetail);
+    setId(id)
+    setStatus(status)
     setOpen(event.currentTarget);
   };
+
+  const handleUpdateStatus = (editedStatus) => {
+    console.log("jsafglk", editedStatus)
+    console.log("jsafglk", id)
+    updateOrderStatus(id, editedStatus);
+    window.location.reload(); // Refresh the page
+  }
 
   const handleCloseMenu = () => {
     setOpen(null);
@@ -272,8 +282,8 @@ export default function UserPage() {
 
                         <TableCell align="left">
                           {status === 0 && <Label color="error">Đã hủy</Label>}
-                          {status === 1 && <Label color="info">Chờ xác nhận</Label>}
-                          {status === 2 && <Label color="info">Chờ thanh toán</Label>}
+                          {status === 1 && <Label color="info">Chờ thanh toán</Label>}
+                          {status === 2 && <Label color="info">Chờ xác nhận</Label>}
                           {status === 3 && <Label color="info">Đang chuẩn bị</Label>}
                           {status === 4 && <Label color="info">Đang vận chuyển</Label>}
                           {status === 5 && <Label color="error">Giao không thành công</Label>}
@@ -281,7 +291,7 @@ export default function UserPage() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, orderDetails)}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, orderDetails, id, status)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
@@ -344,7 +354,7 @@ export default function UserPage() {
         PaperProps={{
           sx: {
             p: 1,
-            width: 140,
+            width: 270,
             '& .MuiMenuItem-root': {
               px: 1,
               typography: 'body2',
@@ -357,6 +367,47 @@ export default function UserPage() {
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Xem chi tiết
         </MenuItem>
+
+        {status === 2 && (
+          <>
+            <MenuItem sx={{ color: 'success.main' }} onClick={() => handleUpdateStatus(3)}>
+              <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+              Xác nhận thanh toán
+            </MenuItem>
+            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleUpdateStatus(0)}>
+              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+              Hủy
+            </MenuItem>
+          </>
+        )}
+
+        {status === 3 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={() => handleUpdateStatus(4)}>
+            <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+            Xác nhận giao đơn vị vận chuyển
+          </MenuItem>
+        )}
+
+        {status === 4 && (
+          <>
+            <MenuItem sx={{ color: 'success.main' }} onClick={() => handleUpdateStatus(6)}>
+              <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+              Xác nhận giao hàng thành công
+            </MenuItem>
+            <MenuItem sx={{ color: 'error.main' }} onClick={() => handleUpdateStatus(5)}>
+              <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+              Xác nhận giao hàng thất bại
+            </MenuItem>
+          </>
+        )}
+
+        {status === 5 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={() => handleUpdateStatus(6)}>
+            <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
+            Xác nhận giao hàng thành công
+          </MenuItem>
+        )}
+
 
       </Popover>
       <Popover

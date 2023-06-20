@@ -97,7 +97,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./CalendarStyles.css";
+
+import { Popover, Typography } from '@mui/material';
 import useOrderedSlot from '../components/getAPI/getOrderedSlotByShopId';
+
 
 const styles = {
     wrap: {
@@ -116,6 +119,12 @@ const Calendar = () => {
     const [startDate, setStartDate] = useState(new Date());
     const [events, setEvents] = useState([]);
 
+    const [orderedSlotId, setOrderedSlotId] = useState(1);
+    const [orderedSlotStart, setOrderedSlotStart] = useState(null);
+
+    const [openPopup, setOpenPopup] = useState(false);
+
+
     const [shopId, setShopId] = useState(2);
     const employee = JSON.parse(localStorage.getItem('employee'));
     if (employee && employee.shopId !== shopId) {
@@ -125,6 +134,15 @@ const Calendar = () => {
     const res = useOrderedSlot(shopId)
     console.log("order slot get from api", res)
 
+    const handleClickCalendar = (id) => {
+        setOrderedSlotId(id);
+        const slotNo = res[id - 1];
+        console.log(res);
+        console.log(slotNo);
+        console.log(events);
+        setOpenPopup(true);
+    };
+
 
     useEffect(() => {
         setStartDate(new Date());
@@ -132,6 +150,7 @@ const Calendar = () => {
         if (res) {
             const fetchedEvents = fetchEvents();
             setEvents(fetchedEvents);
+            console.log("fetch success")
         }
 
     }, [res]);
@@ -143,6 +162,13 @@ const Calendar = () => {
         eventEditHandling: "Disabled", // Disable event editing
         eventResizeHandling: "Disabled", // Disable event resizing
         eventMoveHandling: "Disabled", // Disable event moving
+        onEventClick: async args => {
+            const dp = calendarRef.current.control;
+            handleClickCalendar(args.e.id());
+            setOrderedSlotStart(args.e.start().toString());
+
+            console.log(args.e)
+        }
     });
 
     // const fetchEvents = () => {
@@ -161,8 +187,6 @@ const Calendar = () => {
     // return eventsWithColors;
     // };
     const fetchEvents = () => {
-        // Replace this with your actual logic to fetch events data
-        // from an API or any other source
 
         const fetchedEvents = res.map((event, index) => ({
             id: index + 1,
@@ -179,14 +203,6 @@ const Calendar = () => {
         console.log("event with color", eventsWithColors)
         return eventsWithColors;
     };
-    // const getRandomColor = () => {
-    //     const letters = "0123456789ABCDEF";
-    //     let color = "#";
-    //     for (let i = 0; i < 6; i += 1) {
-    //         color += letters[Math.floor(Math.random() * 16)];
-    //     }
-    //     return color;
-    // };
 
     const getRandomColor = () => {
         const brightness = 120; // Adjust this value to control the brightness (0-255)
@@ -221,8 +237,25 @@ const Calendar = () => {
                     {...calendarConfig}
                     ref={calendarRef}
                     events={events} // Pass the events data to the events prop
+                // onClick={handleClickCalendar}
                 />
             </div>
+            <Popover
+                open={openPopup}
+                anchorEl={calendarRef.current}
+                onClose={() => setOpenPopup(false)}
+                anchorOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'center',
+                    horizontal: 'center',
+                }}
+            >
+                <div>Popover content  {orderedSlotId}   </div>
+                <h1>Ordered Slot Start: {orderedSlotStart}</h1>
+            </Popover>
         </div>
     );
 }

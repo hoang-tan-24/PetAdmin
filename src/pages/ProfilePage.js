@@ -44,15 +44,23 @@ const ProfilePage = () => {
             <ToastContainer />
             <Grid container spacing={3} sx={{ p: 5 }}>
                 <Grid item xs={12} md={3}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Avatar sx={{ width: 120, height: 120 }} src={profile.picture} alt="Avatar" />
-                    </Box>
+                    {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Avatar sx={{ width: 120, height: 120 }} src={editedImage} alt="Avatar" />
+                    </Box> */}
+
+                    <div style={{ width: '300px', height: '300px', overflow: 'hidden' }}>
+                        <img
+                            src={editedImage}
+                            alt=""
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                    </div>
                 </Grid>
                 <Grid item xs={12} md={9}>
                     <Paper sx={{ p: 2 }}>
                         <Box>
                             <Typography variant="h4" gutterBottom>
-                                Thông tin hồ sơ
+                                Thông tin cửa hàng
                             </Typography>
                             <Stack spacing={2}>
                                 <TextField
@@ -88,6 +96,13 @@ const ProfilePage = () => {
                                     label="Địa chỉ cửa hàng"
                                     value={editedAddressShop}
                                     onChange={(e) => setEditedAddressShop(e.target.value)}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="URL hình ảnh"
+                                    value={editedImage}
+                                    onChange={(e) => setEditedImage(e.target.value)}
                                     fullWidth
                                     margin="normal"
                                 />
