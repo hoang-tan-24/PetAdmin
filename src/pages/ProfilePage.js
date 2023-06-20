@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { DialogTitle, DialogActions, Dialog, Stack, Box, Typography, Avatar, Grid, Button, Popover, TextField, Paper, Card, CardContent } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { updateShop } from '../components/putAPI/updateShop';
 
 const ProfilePage = () => {
     const profile = JSON.parse(localStorage.getItem('profile'));
     const employee = JSON.parse(localStorage.getItem('employee'));
-
+    console.log(employee)
     const [open, setOpen] = useState(false);
     const [editedPhone, setEditedPhone] = useState(employee.shopPhone);
     const [editedNameShop, setEditedNameShop] = useState(employee.shopName);
     const [editedAddressShop, setEditedAddressShop] = useState(employee.shopAddress);
-
+    const [editedEmail, setEditedEmail] = useState(employee.shopEmail);
+    const [editedImage, setEditedImage] = useState(employee.shopImage);
+    const [status] = useState(employee.shopStatus);
     const handleClick = () => {
         setOpen(true);
     };
@@ -19,13 +24,24 @@ const ProfilePage = () => {
     };
 
     const handleSave = () => {
-        // Cập nhật thông tin đã chỉnh sửa vào localStorage hoặc gửi lên server
-        // ...
+        const data = {
+            Name: editedNameShop,
+            Address: editedAddressShop,
+            Email: editedEmail,
+            Phone: editedPhone,
+            Image: editedImage,
+            Status: status
+        };
+        console.log(data)
+        const res = updateShop(employee.shopId, data);
+        toast.success('Cập nhật thành công!');
+        // window.location.reload(); // Refresh the page
         handleClose();
     };
 
     return (
         <Box sx={{ p: 3, backgroundColor: '#f2f2f2' }} >
+            <ToastContainer />
             <Grid container spacing={3} sx={{ p: 5 }}>
                 <Grid item xs={12} md={3}>
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -47,11 +63,12 @@ const ProfilePage = () => {
                                     disabled
                                 />
                                 <TextField
-                                    label="Email"
-                                    value={profile.email}
+                                    label="Email cửa hàng"
+                                    value={editedEmail}
+                                    onChange={(e) => setEditedEmail(e.target.value)}
                                     fullWidth
                                     margin="normal"
-                                    disabled
+                                // disabled
                                 />
                                 <TextField
                                     label="Số điện thoại"

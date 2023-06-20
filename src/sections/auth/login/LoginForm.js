@@ -38,7 +38,7 @@ export default function LoginForm() {
     } catch (err) {
       console.log(err);
     }
-    toast.error('Login Failed! Wrong username or password.');
+    toast.error('Đăng nhập không thành công! Vui lòng thử lại!');
   };
 
   return (
