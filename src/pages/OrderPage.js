@@ -4,17 +4,19 @@ import { sentenceCase } from 'change-case';
 import { useState } from 'react';
 // @mui
 import {
-  DialogContentText,
-  DialogContent,
-  Dialog,
-  DialogTitle,
+  InputAdornment,
+  Grid,
+  TextField,
   Card,
   Table,
   Stack,
   Paper,
   Avatar,
+  Button,
+  Popover,
   Checkbox,
   TableRow,
+  MenuItem,
   TableBody,
   TableCell,
   Container,
@@ -31,15 +33,17 @@ import Scrollbar from '../components/scrollbar';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 // mock
 import ORDERLIST from '../_mock/user';
+import useOrderListByShopId from '../components/getAPI/getOrderListByShopId';
+import useUserById from '../components/getAPI/getUserById';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'nameOrders', label: 'Sản phẩm', alignRight: false },
-  { id: 'buyer', label: 'Người nhận', alignRight: false },
-  { id: 'quantity', label: 'Số lượng', alignRight: false },
-  { id: 'total', label: 'Tổng giá', alignRight: false },
+  { id: 'id ', label: 'Id', alignRight: false },
+  { id: 'totalPrice', label: 'Tổng tiền (VNĐ)', alignRight: false },
   { id: 'address', label: 'Địa chỉ', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'orderedDate', label: 'Ngày đặt hàng', alignRight: false },
   { id: 'status', label: 'Trạng Thái', alignRight: false },
   { id: '' }
 ];
@@ -92,12 +96,41 @@ export default function UserPage() {
 
   const [showOrderDetail, setShowOrderDetail] = useState(false);
 
+  const [openPopup, setOpenPopup] = useState(false);
+ // order
+ const [id, setId] = useState(0);
+ const [totalPrice, setTotalPrice] = useState(0);
+ const [address, setAddress] = useState('');
+ const [userId, setUserId] = useState(0);
+ const [email, setEmail] = useState('');
+ const [orderedDate, setOrderedDate] = useState(0);
+ const [status, setStatus] = useState(0);
+ const [shopId, setShopId] = useState(1);
+// orderdetail
+const [orderDetailName, setOrderDetailName] = useState('');
+const [price, setPrice] = useState(0);
+const [quantity, setQuantity] = useState(0);
+const [description, setDescription] = useState('');
+const [time, setTime] = useState(0);
+
+ const getOrderListByShopId = useOrderListByShopId(shopId);
+
+ const getUser = useUserById(shopId);
+
   const handleClickDetail = () => {
     setShowOrderDetail(true);
   };
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setOpen(null);
+  };
+
+  const handleOrderDetailPopup = () => {
+    setShowOrderDetail(true);
   };
 
   const handleRequestSort = (event, property) => {
@@ -148,12 +181,29 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ORDERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - getOrderListByShopId.length) : 0;
 
-  const filteredUsers = applySortFilter(ORDERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(getOrderListByShopId, getComparator(order, orderBy), filterName);
+
+  const users = applySortFilter(getUser, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  /* {showOrderDetail && (
+    <>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{nameOrders}</DialogTitle>
+        <DialogContent>
+          <img src={image} alt="Product" />
+          <DialogContentText>
+            Tổng giá: {total}
+          </DialogContentText>
+          <DialogContentText>
+            {detail}
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
+    </>
+  )} */
   return (
     <>
       <Helmet>
@@ -178,9 +228,17 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, nameOrders, detail, buyer, quantity, total, address, status, image } = row;
+                    const { id, totalPrice, address, userId, orderedDate, status } = row;
                     const selectedOrder = selected.indexOf(id) !== -1;
+                    const existingDate = new Date(orderedDate); 
 
+                    const options = {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    };
+                    
+                    const formattedDate = existingDate.toLocaleDateString('en-GB', options);
                     return (
                       <TableRow hover key={id} tabIndex={-1} quantity="checkbox" selected={selectedOrder}>
                         <TableCell padding="checkbox">
@@ -189,39 +247,40 @@ export default function UserPage() {
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={nameOrders} src={image} />
-                            <Typography variant="subtitle2" noWrap onClick={handleClickDetail}>
-                              {nameOrders}
-                            </Typography>
-                            {showOrderDetail && (
-                              <>
-                                <Dialog open={open} onClose={handleClose}>
-                                  <DialogTitle>{nameOrders}</DialogTitle>
-                                  <DialogContent>
-                                    <img src={image} alt="Product" />
-                                    <DialogContentText>
-                                      Tổng giá: {total}
-                                    </DialogContentText>
-                                    <DialogContentText>
-                                      {detail}
-                                    </DialogContentText>
-                                  </DialogContent>
-                                </Dialog>
-                              </>
-                            )}
-
+                              {id}
+                               
+                        
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{buyer}</TableCell>
+                        <TableCell align="left">{totalPrice}</TableCell>
 
-                        <TableCell align="left">{quantity}</TableCell>
+                        <TableCell align="left">{address}</TableCell>
 
-                        <TableCell align='left'>{total}</TableCell>
-                        <TableCell align='left'>{address}</TableCell>
+                        {
+                          users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                          const { id, email } = row;
+                          if (id === userId )return (
+                            <TableCell align="left">{email}</TableCell>
+                              );
+                            return (
+                              null
+                              );
+                            }
+                          )
+                        }
+                        
+                        
+                        <TableCell align='left'>{formattedDate}</TableCell>
 
                         <TableCell align="left">
-                          <Label color={(status === 'SELLING' && 'success') || 'error'}>{sentenceCase(status)}</Label>
+                          {status === 0 && <Label color="error">Đã hủy</Label>}
+                          {status === 1 && <Label color="info">Chờ xác nhận</Label>}
+                          {status === 2 && <Label color="info">Chờ thanh toán</Label>}
+                          {status === 3 && <Label color="info">Đang chuẩn bị</Label>}
+                          {status === 4 && <Label color="info">Đang vận chuyển</Label>}
+                          {status === 5 && <Label color="error">Giao không thành công</Label>}
+                          {status === 6 && <Label color="success">Đã hoàn thành</Label>}
                         </TableCell>
 
                         <TableCell align="right">
@@ -277,6 +336,44 @@ export default function UserPage() {
           />
         </Card>
       </Container>
+      <Popover
+        open={Boolean(open)}
+        anchorEl={open}
+        onClose={handleCloseMenu}
+        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            p: 1,
+            width: 140,
+            '& .MuiMenuItem-root': {
+              px: 1,
+              typography: 'body2',
+              borderRadius: 0.75,
+            },
+          },
+        }}
+      >
+        <MenuItem onClick={handleOrderDetailPopup}>
+          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+          Chỉnh sửa
+        </MenuItem>
+
+      </Popover>    
+      <Popover
+        open={showOrderDetail}
+        anchorEl={showOrderDetail}
+        onClose={() => setShowOrderDetail(false)}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+      >s
+        </Popover>
     </>
   );
 }
