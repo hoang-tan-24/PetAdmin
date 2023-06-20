@@ -2,6 +2,8 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // @mui
 import {
     InputAdornment,
@@ -160,7 +162,9 @@ export default function UserPage() {
 
         const res = createPet(itemData);
         console.log(res)
-        window.location.reload(); // Refresh the page
+        setTimeout(() => {
+            window.location.reload(); // Reload the page after 1 second
+          }, 700);
     };
 
     const handleProductNameChange = (event) => {
@@ -220,7 +224,9 @@ export default function UserPage() {
 
     const handleUpdateStatus = () => {
         updatePetStatus(editedId, updatedStatus)
-        window.location.reload(); // Refresh the page
+        setTimeout(() => {
+            window.location.reload(); // Reload the page after 1 second
+          }, 700);
     }
 
 
@@ -303,7 +309,9 @@ export default function UserPage() {
         const res = updatePet(editedId, itemData);
         console.log(res)
 
-        window.location.reload(); // Refresh the page
+        setTimeout(() => {
+            window.location.reload(); // Reload the page after 1 second
+          }, 700);
     }
 
 
@@ -352,6 +360,7 @@ export default function UserPage() {
             <Helmet>
                 <title>Product</title>
             </Helmet>
+            <ToastContainer />
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>

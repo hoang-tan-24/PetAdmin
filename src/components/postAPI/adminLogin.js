@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const adminLogin = async (username, password) => {
     try {
@@ -9,6 +11,7 @@ const adminLogin = async (username, password) => {
             localStorage.setItem('admin', JSON.stringify(data));
         return data;
     } catch (error) {
+        toast.error('Đăng nhập không thành công! Vui lòng thử lại!');
         console.error(error);
         throw error;
     }

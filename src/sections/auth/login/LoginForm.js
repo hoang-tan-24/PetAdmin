@@ -38,7 +38,6 @@ export default function LoginForm() {
     } catch (err) {
       console.log(err);
     }
-    toast.error('Đăng nhập không thành công! Vui lòng thử lại!');
   };
 
   return (
