@@ -275,7 +275,7 @@ const Calendar = () => {
                 }}
             >
                 <div>
-                    <h2 style={{ paddingLeft: '30px' }}>Chi tiết lịch:</h2>
+                    <h2 style={{ paddingLeft: '30px' }}>Chi tiết đặt hàng:</h2>
                     <table style={{ padding: '30px' }}>
                         <tbody>
                             <tr style={{ paddingBottom: '10px' }}>
@@ -306,7 +306,7 @@ const Calendar = () => {
                             <tr style={{ paddingBottom: '10px' }}>
                                 <td style={{ paddingRight: '30px' }}>Hình:</td>
                                 <td>
-                                    <img src={serviceImage} alt="Img" style={{ width: '300px', height: '300px' }} />
+                                    <img src={serviceImage} alt="Img" style={{ width: '200px', height: '200px' }} />
                                 </td>
                             </tr>
                             <tr style={{ paddingBottom: '10px' }}>
