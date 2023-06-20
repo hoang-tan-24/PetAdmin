@@ -92,7 +92,7 @@ export default function LoginPage() {
     <>
       <ToastContainer />
       <Helmet>
-        <title> Login | Minimal UI </title>
+        <title>Login</title>
       </Helmet>
 
       <StyledRoot>
@@ -111,12 +111,12 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to PETUNI
+              Đăng nhập để đến trang PETUNI
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Don’t have an account? {''}
-              <Link variant="subtitle2">Get started</Link>
+              Bạn chưa có tạo tài khoản {''}
+              <Link variant="subtitle2">Tạo tài khoản</Link>
             </Typography>
 
             <Stack direction="row" spacing={2}>
@@ -128,7 +128,7 @@ export default function LoginPage() {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                OR
+                HOẶC
               </Typography>
             </Divider>
 

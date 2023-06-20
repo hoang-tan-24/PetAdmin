@@ -7,18 +7,9 @@ import useGgPf from '../../../components/getAPI/getGoogleLogin';
 
 
 const MENU_OPTIONS = [
-  // {
-  //   label: 'Trang chủ',
-  //   icon: 'eva:home-fill',
-  // },
   {
     label: 'Thông tin cửa hàng',
-    icon: 'eva:person-fill',
   },
-  // {
-  //   label: 'Cài đặt',
-  //   icon: 'eva:settings-2-fill',
-  // },
 ];
 
 export default function AccountPopover() {
@@ -133,7 +124,7 @@ export default function AccountPopover() {
         <Divider sx={{ borderStyle: 'dashed' }} />
 
         <MenuItem onClick={logOut} sx={{ m: 1 }}>
-          Logout
+          Đăng xuất
         </MenuItem>
       </Popover>
     </>
