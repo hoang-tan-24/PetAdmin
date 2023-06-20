@@ -5,24 +5,42 @@ import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@m
 import { LoadingButton } from '@mui/lab';
 // components
 import Iconify from '../../../components/iconify';
-
+import {adminLogin} from '../../../components/postAPI/adminLogin';
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [user, setUser] = useState([]);
 
   const handleClick = () => {
-    navigate('/dashboard', { replace: true });
+    // navigate('/dashboard', { replace: true });
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value ;
+    const loginAdmin = adminLogin(email, password);
+    try{
+      loginAdmin.then((value) => {
+        if (value == null) window.alert("Login Failed\nWrong email or password."); 
+        else {
+          localStorage.setItem('user', JSON.stringify(user));
+          window.location.href = '/system/dashboard';
+        }
+      });
+    }catch (err) {
+      window.alert("Login Failed\nWrong email or password."); 
+      console.log(err);
+  }
+    
   };
 
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField id="email" name="email" label="Email address" />
 
         <TextField
+          id="password"
           name="password"
           label="Password"
           type={showPassword ? 'text' : 'password'}
