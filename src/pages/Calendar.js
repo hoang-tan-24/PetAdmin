@@ -121,6 +121,15 @@ const Calendar = () => {
 
     const [orderedSlotId, setOrderedSlotId] = useState(1);
     const [orderedSlotStart, setOrderedSlotStart] = useState(null);
+    const [orderedSlotEnd, setOrderedSlotEnd] = useState(null);
+
+    const [orderStatus, setOrderStatus] = useState(0);
+    const [serviceName, setServiceName] = useState('');
+    const [serviceImage, setServiceImage] = useState('');
+    const [servicePetTypeId, setServicePetTypeId] = useState(1);
+    const [userEmail, setUserEmail] = useState('');
+    const [userPhone, setUserPhone] = useState('');
+
 
     const [openPopup, setOpenPopup] = useState(false);
 
@@ -150,10 +159,22 @@ const Calendar = () => {
         if (res) {
             const fetchedEvents = fetchEvents();
             setEvents(fetchedEvents);
-            console.log("fetch success")
+            console.log("fetch success");
         }
+        if (orderedSlotStart && res) {
+            console.log("res ne : ", res)
 
-    }, [res]);
+            const matchingItem = res.find(item => item.startTime === orderedSlotStart);
+            if (matchingItem) {
+                setOrderStatus(matchingItem.status);
+                setServiceName(matchingItem.service.name);
+                setServiceImage(matchingItem.service.image);
+                setServicePetTypeId(matchingItem.service.petTypeId);
+                setUserEmail(matchingItem.user.email);
+                setUserPhone(matchingItem.user.phone);
+            }
+        }
+    }, [res, orderedSlotStart]);
 
     const [calendarConfig] = useState({
         viewType: "Day",
@@ -166,7 +187,7 @@ const Calendar = () => {
             const dp = calendarRef.current.control;
             handleClickCalendar(args.e.id());
             setOrderedSlotStart(args.e.start().toString());
-
+            setOrderedSlotEnd(args.e.end().toString());
             console.log(args.e)
         }
     });
@@ -253,10 +274,65 @@ const Calendar = () => {
                     horizontal: 'center',
                 }}
             >
-                <div>Popover content  {orderedSlotId}   </div>
-                <h1>Ordered Slot Start: {orderedSlotStart}</h1>
-            </Popover>
-        </div>
+                <div>
+                    <h2 style={{ paddingLeft: '30px' }}>Chi tiết lịch:</h2>
+                    <table style={{ padding: '30px' }}>
+                        <tbody>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Thời gian bắt đầu:</td>
+                                <td>{new Date(orderedSlotStart).toLocaleString()}</td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Thời gian kết thúc:</td>
+                                <td>{new Date(orderedSlotEnd).toLocaleString()}</td>
+                            </tr>
+
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Tên dịch vụ:</td>
+                                <td>{serviceName}</td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Trạng thái:</td>
+                                <td>
+                                    {orderStatus === 0 && 'Đã hủy'}
+                                    {orderStatus === 1 && 'Chờ thanh toán'}
+                                    {orderStatus === 2 && 'Chờ xác nhận'}
+                                    {orderStatus === 3 && 'Đang chuẩn bị'}
+                                    {orderStatus === 4 && 'Đang vận chuyển'}
+                                    {orderStatus === 5 && 'Giao không thành công'}
+                                    {orderStatus === 5 && 'Đã hoàn thành'}
+                                </td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Hình:</td>
+                                <td>
+                                    <img src={serviceImage} alt="Img" style={{ width: '300px', height: '300px' }} />
+                                </td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Loại thú cưng:</td>
+                                <td>
+                                    {servicePetTypeId === 1 && 'Chó'}
+                                    {servicePetTypeId === 2 && 'Mèo'}
+                                    {servicePetTypeId === 3 && 'Chim'}
+                                    {servicePetTypeId === 4 && 'Cá'}
+                                    {servicePetTypeId === 5 && 'Không phân loại'}
+                                </td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Email khách hàng:</td>
+                                <td>{userEmail}</td>
+                            </tr>
+                            <tr style={{ paddingBottom: '10px' }}>
+                                <td style={{ paddingRight: '30px' }}>Điện thoại khách hàng:</td>
+                                <td>{userPhone}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </Popover >
+        </div >
     );
 }
 
