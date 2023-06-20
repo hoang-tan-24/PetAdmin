@@ -35,6 +35,7 @@ import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import ORDERLIST from '../_mock/user';
 import useOrderListByShopId from '../components/getAPI/getOrderListByShopId';
 import useUserById from '../components/getAPI/getUserById';
+import OrderDetailsTable from './orderDetailsTable';
 
 // ----------------------------------------------------------------------
 
@@ -97,31 +98,37 @@ export default function UserPage() {
   const [showOrderDetail, setShowOrderDetail] = useState(false);
 
   const [openPopup, setOpenPopup] = useState(false);
- // order
- const [id, setId] = useState(0);
- const [totalPrice, setTotalPrice] = useState(0);
- const [address, setAddress] = useState('');
- const [userId, setUserId] = useState(0);
- const [email, setEmail] = useState('');
- const [orderedDate, setOrderedDate] = useState(0);
- const [status, setStatus] = useState(0);
- const [shopId, setShopId] = useState(1);
-// orderdetail
-const [orderDetailName, setOrderDetailName] = useState('');
-const [price, setPrice] = useState(0);
-const [quantity, setQuantity] = useState(0);
-const [description, setDescription] = useState('');
-const [time, setTime] = useState(0);
+  // order
+  const [id, setId] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [address, setAddress] = useState('');
+  const [userId, setUserId] = useState(0);
+  const [email, setEmail] = useState('');
+  const [orderedDate, setOrderedDate] = useState(0);
+  const [status, setStatus] = useState(0);
+  const [shopId, setShopId] = useState(1);
+  // orderdetail
 
- const getOrderListByShopId = useOrderListByShopId(shopId);
+  const [orderDetail, setOrderDetail] = useState(false);
 
- const getUser = useUserById(shopId);
+  const [orderDetailName, setOrderDetailName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+  const [description, setDescription] = useState('');
+  const [time, setTime] = useState(0);
 
+  const getOrderListByShopId = useOrderListByShopId(shopId);
+  const employee = JSON.parse(localStorage.getItem('employee'));
+  if (employee && employee.shopId !== shopId) {
+    console.log("employee co shop id la : ", employee.shopId)
+    setShopId(employee.shopId)
+  }
   const handleClickDetail = () => {
     setShowOrderDetail(true);
   };
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, orderDetail) => {
+    setOrderDetail(orderDetail);
     setOpen(event.currentTarget);
   };
 
@@ -185,7 +192,7 @@ const [time, setTime] = useState(0);
 
   const filteredUsers = applySortFilter(getOrderListByShopId, getComparator(order, orderBy), filterName);
 
-  const users = applySortFilter(getUser, getComparator(order, orderBy), filterName);
+  const users = applySortFilter(getOrderListByShopId, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
   /* {showOrderDetail && (
@@ -228,16 +235,16 @@ const [time, setTime] = useState(0);
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, totalPrice, address, userId, orderedDate, status } = row;
+                    const { id, totalPrice, address, userId, orderedDate, status, orderDetails } = row;
                     const selectedOrder = selected.indexOf(id) !== -1;
-                    const existingDate = new Date(orderedDate); 
+                    const existingDate = new Date(orderedDate);
 
                     const options = {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'
                     };
-                    
+
                     const formattedDate = existingDate.toLocaleDateString('en-GB', options);
                     return (
                       <TableRow hover key={id} tabIndex={-1} quantity="checkbox" selected={selectedOrder}>
@@ -247,9 +254,9 @@ const [time, setTime] = useState(0);
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                              {id}
-                               
-                        
+                            {id}
+
+
                           </Stack>
                         </TableCell>
 
@@ -259,18 +266,18 @@ const [time, setTime] = useState(0);
 
                         {
                           users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                          const { id, email } = row;
-                          if (id === userId )return (
-                            <TableCell align="left">{email}</TableCell>
-                              );
+                            const { id, email } = row;
+                            if (id === userId) return (
+                              <TableCell align="left">{email}</TableCell>
+                            );
                             return (
                               null
-                              );
-                            }
+                            );
+                          }
                           )
                         }
-                        
-                        
+
+
                         <TableCell align='left'>{formattedDate}</TableCell>
 
                         <TableCell align="left">
@@ -284,10 +291,12 @@ const [time, setTime] = useState(0);
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, orderDetails)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
+
+
                       </TableRow>
                     );
                   })}
@@ -359,7 +368,7 @@ const [time, setTime] = useState(0);
           Chỉnh sửa
         </MenuItem>
 
-      </Popover>    
+      </Popover>
       <Popover
         open={showOrderDetail}
         anchorEl={showOrderDetail}
@@ -372,8 +381,8 @@ const [time, setTime] = useState(0);
           vertical: 'center',
           horizontal: 'center',
         }}
-      >s
-        </Popover>
+      ><OrderDetailsTable orderDetails={orderDetail} />
+      </Popover>
     </>
   );
 }

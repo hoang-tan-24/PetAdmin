@@ -4,8 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { Link, Stack, IconButton, InputAdornment, TextField, Checkbox } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Iconify from '../../../components/iconify';
-import {adminLogin} from '../../../components/postAPI/adminLogin';
+import { adminLogin } from '../../../components/postAPI/adminLogin';
+
+
+
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
@@ -16,29 +21,32 @@ export default function LoginForm() {
 
   const handleClick = () => {
     // navigate('/dashboard', { replace: true });
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value ;
-    const loginAdmin = adminLogin(email, password);
-    try{
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const loginAdmin = adminLogin(username, password);
+    const admin = JSON.parse(localStorage.getItem('admin'));
+    try {
       loginAdmin.then((value) => {
-        if (value == null) window.alert("Login Failed\nWrong email or password."); 
+        if (value == null) {
+          console.log("login fail");
+        }
         else {
           localStorage.setItem('user', JSON.stringify(user));
           window.location.href = '/system/dashboard';
         }
       });
-    }catch (err) {
-      window.alert("Login Failed\nWrong email or password."); 
+    } catch (err) {
       console.log(err);
-  }
-    
+    }
+    toast.error('Login Failed! Wrong username or password.');
   };
 
   return (
     <>
-      <Stack spacing={3}>
-        <TextField id="email" name="email" label="Email address" />
 
+      <Stack spacing={3}>
+        <TextField id="username" name="username" label="username" />
+        <ToastContainer />
         <TextField
           id="password"
           name="password"

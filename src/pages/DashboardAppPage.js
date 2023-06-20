@@ -5,6 +5,7 @@ import { Grid, Container, Typography } from '@mui/material';
 // components
 // sections
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   AppCurrentVisits,
   AppWebsiteVisits,
@@ -14,6 +15,7 @@ import {
 import useGgPf from '../components/getAPI/getGoogleLogin';
 import { shopLogin } from '../components/postAPI/shopLogin';
 import useDashboard from '../components/getAPI/getDashboard';
+
 
 
 // ----------------------------------------------------------------------
@@ -27,9 +29,8 @@ export default function DashboardAppPage() {
   const [shopId, setShopId] = useState(2);
 
   const callSL = shopLogin(profile.email)
-  // const empCall = useShopLogin(profile.email)
-  // console.log(empCall)
-  // const DASHBOARD = useDashboard(empCall.shopId)
+  console.log(callSL)
+
   const DASHBOARD = useDashboard(shopId)
   console.log("shopid", shopId)
   console.log("dashboard tuong ung", DASHBOARD)
@@ -40,11 +41,14 @@ export default function DashboardAppPage() {
     setShopId(employee.shopId)
   }
   // useEffect(() => {
-  //   if (employee && employee.shopId) {
-  //     console.log("employee co shop id la : ", employee.shopId)
-  //     // setShopId(employee.shopId)
-  //   }
-  // }, [employee]);
+  //   callSL.catch((error) => {
+  //     if (axios.isAxiosError(error)) {
+  //       // Axios error occurred
+  //       console.log("Axios error");
+  //       window.location.href = '/login';
+  //     }
+  //   });
+  // }, [callSL]);
 
   const defaultIntValue = 0;
   const defaultDecimalValue = 0;
