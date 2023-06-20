@@ -118,6 +118,7 @@ export default function UserPage() {
   const [time, setTime] = useState(0);
 
   const getOrderListByShopId = useOrderListByShopId(shopId);
+  console.log(getOrderListByShopId)
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== shopId) {
     console.log("employee co shop id la : ", employee.shopId)
@@ -235,7 +236,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, totalPrice, address, userId, orderedDate, status, orderDetails } = row;
+                    const { id, totalPrice, address, userId, orderedDate, status, orderDetails, user } = row;
                     const selectedOrder = selected.indexOf(id) !== -1;
                     const existingDate = new Date(orderedDate);
 
@@ -263,19 +264,8 @@ export default function UserPage() {
                         <TableCell align="left">{totalPrice}</TableCell>
 
                         <TableCell align="left">{address}</TableCell>
+                        <TableCell align="left">{user.email}</TableCell>
 
-                        {
-                          users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                            const { id, email } = row;
-                            if (id === userId) return (
-                              <TableCell align="left">{email}</TableCell>
-                            );
-                            return (
-                              null
-                            );
-                          }
-                          )
-                        }
 
 
                         <TableCell align='left'>{formattedDate}</TableCell>
