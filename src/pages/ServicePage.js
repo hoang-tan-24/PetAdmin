@@ -248,11 +248,11 @@ export default function UserPage() {
     setStatus(event.target.value);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, id) => {
+    const selectedIndex = selected.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -821,16 +821,6 @@ export default function UserPage() {
             value={editedDescription}
             onChange={handleEditProductDescriptionChange}
             fullWidth sx={{ mb: 2 }} />
-          <TextField
-            label="Trạng thái"
-            select
-            fullWidth
-            sx={{ mb: 2 }}
-            value={editedStatus}
-            onChange={handleEditStatusChange}>
-            <MenuItem value="0">Tạm ngừng</MenuItem>
-            <MenuItem value="1">Đang bán</MenuItem>
-          </TextField>
 
           <Button variant="contained" onClick={() => {
             handleEditService();

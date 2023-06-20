@@ -1,12 +1,8 @@
-// component
 import SvgColor from '../../../components/svg-color';
-
-
-// ----------------------------------------------------------------------
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
-const navConfig = [
+const dashboardNavConfig = [
   {
     title: 'Tổng quan',
     path: '/dashboard/app',
@@ -37,7 +33,9 @@ const navConfig = [
     path: '/dashboard/calendar',
     icon: icon('ic_calendar'),
   },
+];
 
+const systemNavConfig = [
   {
     title: 'Hệ thống Tổng quan',
     path: '/system/dashboard',
@@ -70,4 +68,4 @@ const navConfig = [
   },
 ];
 
-export default navConfig;
+export { dashboardNavConfig, systemNavConfig };

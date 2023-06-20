@@ -343,10 +343,6 @@ export default function UserPage() {
     setEditedCategory(event.target.value);
   };
 
-  const handleEditStatusChange = (event) => {
-    setEditedStatus(event.target.value);
-  };
-
   const handleEditProductNameChange = (event) => {
     setEditedName(event.target.value);
   };
@@ -744,16 +740,6 @@ export default function UserPage() {
             value={editedDescription}
             onChange={handleEditProductDescriptionChange}
             fullWidth sx={{ mb: 2 }} />
-          <TextField
-            label="Trạng thái"
-            select
-            fullWidth
-            sx={{ mb: 2 }}
-            value={editedStatus}
-            onChange={handleEditStatusChange}>
-            <MenuItem value="0">Tạm ngừng</MenuItem>
-            <MenuItem value="1">Đang bán</MenuItem>
-          </TextField>
 
           <Button variant="contained" onClick={() => {
             handleEditProduct();

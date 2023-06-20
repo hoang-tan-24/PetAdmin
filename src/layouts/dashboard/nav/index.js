@@ -1,29 +1,20 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
-import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Drawer, Typography, Avatar } from '@mui/material';
+import { Box, Drawer } from '@mui/material';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // components
 import Logo from '../../../components/logo';
 import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
-//
-import navConfig from './config';
+// config
+import { dashboardNavConfig, systemNavConfig } from './config';
 
 // ----------------------------------------------------------------------
 
 const NAV_WIDTH = 280;
-
-const StyledAccount = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(2, 2.5),
-  borderRadius: Number(theme.shape.borderRadius) * 1.5,
-  backgroundColor: alpha(theme.palette.grey[500], 0.12),
-}));
 
 // ----------------------------------------------------------------------
 
@@ -36,15 +27,17 @@ export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
-
-  useEffect(() => {
-    if (openNav) {
-      onCloseNav();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  const [loading, setLoading] = useState(true);
 
   const profile = JSON.parse(localStorage.getItem('profile'));
+
+  useEffect(() => {
+    if (profile) {
+      setLoading(false);
+    }
+  }, [profile]);
+
+  const config = pathname.includes('/system') ? systemNavConfig : dashboardNavConfig;
 
   const renderContent = (
     <Scrollbar
@@ -57,25 +50,7 @@ export default function Nav({ openNav, onCloseNav }) {
         <Logo />
       </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline="none">
-          <StyledAccount>
-            <Avatar src={profile.picture} alt="photoURL" />
-
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {profile.name}
-              </Typography>
-
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {profile.role}
-              </Typography>
-            </Box>
-          </StyledAccount>
-        </Link>
-      </Box>
-
-      <NavSection data={navConfig} />
+      <NavSection data={config} />
 
       <Box sx={{ flexGrow: 1 }} />
     </Scrollbar>

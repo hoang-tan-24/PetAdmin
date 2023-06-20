@@ -368,7 +368,7 @@ export default function UserPage() {
         }}
       >
         <MenuItem onClick={handleOrderDetailPopup}>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+          <Iconify icon={'ph:list-magnifying-glass-thin'} sx={{ mr: 2 }} />
           Xem chi tiết
         </MenuItem>
 

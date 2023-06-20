@@ -29,7 +29,7 @@ export default function DashboardAppPage() {
     return (
         <>
             <Helmet>
-                <title> Dashboard | Minimal UI </title>
+                <title> Tổng quan </title>
             </Helmet>
 
             <Container maxWidth="xl">
@@ -39,19 +39,19 @@ export default function DashboardAppPage() {
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Số lượng đơn hàng tuần trước" total={DASHBOARD.totalOrderByLastWeek ?? defaultIntValue} icon={'ant-design:android-filled'} />
+                        <AppWidgetSummary title="Số lượng đơn hàng tuần trước" total={DASHBOARD.totalOrderByLastWeek ?? defaultIntValue} />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Doanh thu tuần trước (VND)" total={DASHBOARD.totalIncomeByLastWeek ?? defaultIntValue} color="info" icon={'ant-design:apple-filled'} />
+                        <AppWidgetSummary title="Doanh thu tuần trước (VND)" total={DASHBOARD.totalIncomeByLastWeek ?? defaultIntValue} color="info" />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Tổng Số lượng đơn hàng" total={DASHBOARD.totalOrder ?? defaultIntValue} color="warning" icon={'ant-design:windows-filled'} />
+                        <AppWidgetSummary title="Tổng Số lượng đơn hàng" total={DASHBOARD.totalOrder ?? defaultIntValue} color="warning" />
                     </Grid>
 
                     <Grid item xs={12} sm={6} md={3}>
-                        <AppWidgetSummary title="Tổng Doanh thu (VND)" total={DASHBOARD.totalIncome ?? defaultIntValue} color="error" icon={'ant-design:bug-filled'} />
+                        <AppWidgetSummary title="Tổng Doanh thu (VND)" total={DASHBOARD.totalIncome ?? defaultIntValue} color="error" />
                     </Grid>
 
                     <Grid item xs={12} md={6} lg={8}>
