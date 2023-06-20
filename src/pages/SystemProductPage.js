@@ -2,6 +2,8 @@ import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // @mui
 import {
   InputAdornment,
@@ -210,7 +212,9 @@ export default function UserPage() {
 
   const handleUpdateStatus = () => {
     updateProductStatus(editedId, updatedStatus)
-    window.location.reload(); // Refresh the page
+    setTimeout(() => {
+      window.location.reload(); // Reload the page after 1 second
+    }, 700);
   }
 
 
@@ -366,7 +370,7 @@ export default function UserPage() {
       <Helmet>
         <title>Product</title>
       </Helmet>
-
+      <ToastContainer />
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
@@ -517,21 +521,21 @@ export default function UserPage() {
                 {editedStatus === 2 && (
                     <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
-                        Unban
+                        Bỏ cấm
                     </MenuItem>
                 )}
 
                 {editedStatus === 1 && (
                     <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Ban
+                        Cấm
                     </MenuItem>
                 )}
 
                 {editedStatus === 0 && (
                     <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Ban
+                        Cấm
                     </MenuItem>
                 )}
 
