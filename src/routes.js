@@ -54,13 +54,13 @@ export default function Router() {
       path: '/system',
       element: <DashboardLayout />,
       children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
+        { element: <Navigate to="/system/dashboard" />, index: true },
+        { path: 'dashboard', element: <SystemDashboardPage /> },
+        { path: 'users', element: <SystemUserPage /> },
+        { path: 'shops', element: <SystemShopPage /> },
         { path: 'pets', element: <SystemPetPage /> },
         { path: 'products', element: <SystemProductPage /> },
         { path: 'services', element: <SystemServicePage /> },
-        { path: 'shops', element: <SystemShopPage /> },
-        { path: 'users', element: <SystemUserPage /> },
-        { path: 'dashboard', element: <SystemDashboardPage /> },
       ],
     },
     {
