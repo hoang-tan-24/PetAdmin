@@ -25,12 +25,15 @@ import {
   TableContainer,
   TablePagination,
 } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 // sections
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+
 // mock
 import ORDERLIST from '../_mock/user';
 import useOrderListByShopId from '../components/getAPI/getOrderListByShopId';
@@ -137,10 +140,11 @@ export default function UserPage() {
   };
 
   const handleUpdateStatus = (editedStatus) => {
-    console.log("jsafglk", editedStatus)
-    console.log("jsafglk", id)
     updateOrderStatus(id, editedStatus);
-    window.location.reload(); // Refresh the page
+    toast.success('Cập nhật thành công!');
+    setTimeout(() => {
+      window.location.reload(); // Reload the page after 1 second
+    }, 700); // 1000 milliseconds = 1 second
   }
 
   const handleCloseMenu = () => {
@@ -227,7 +231,7 @@ export default function UserPage() {
       <Helmet>
         <title>Order</title>
       </Helmet>
-
+      <ToastContainer />
       <Container>
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
