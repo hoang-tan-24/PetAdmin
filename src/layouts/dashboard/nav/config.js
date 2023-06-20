@@ -25,50 +25,49 @@ const navConfig = [
   {
     title: 'Quản lí sản phẩm',
     path: '/dashboard/products',
-    icon: icon('ic_cart'),
+    icon: icon('ic_product'),
   },
   {
     title: 'Quản lí dịch vụ',
     path: '/dashboard/service',
-    icon: icon('ic_cart'),
+    icon: icon('ic_services'),
   },
   {
     title: 'Lịch sử dụng dịch vụ',
     path: '/dashboard/calendar',
     icon: icon('ic_calendar'),
   },
+
   {
-    title: 'System Users',
-    path: '/system/users',
-    icon: icon('ic_disabled'),
-  },
-  {
-    title: 'System Shops',
-    path: '/system/shops',
-    icon: icon('ic_disabled'),
-  },
-  {
-    title: 'System Pets',
-    path: '/system/pets',
-    icon: icon('ic_disabled'),
-  },
-  {
-    title: 'System Products',
-    path: '/system/products',
-    icon: icon('ic_disabled'),
-  },
-  {
-    title: 'System Services',
-    path: '/system/services',
-    icon: icon('ic_disabled'),
-  },
-  {
-    title: 'System Dashboard',
+    title: 'Hệ thống Tổng quan',
     path: '/system/dashboard',
-    icon: icon('ic_disabled'),
+    icon: icon('ic_analytics'),
   },
-
-
+  {
+    title: 'Hệ thống ngươi dùng',
+    path: '/system/users',
+    icon: icon('ic_user'),
+  },
+  {
+    title: 'Hệ thống cửa hàng',
+    path: '/system/shops',
+    icon: icon('ic_shop'),
+  },
+  {
+    title: 'Hệ thống thú cưng',
+    path: '/system/pets',
+    icon: icon('ic_pets'),
+  },
+  {
+    title: 'Hệ thống sản phẩm',
+    path: '/system/products',
+    icon: icon('ic_product'),
+  },
+  {
+    title: 'Hệ thống dịch vụ',
+    path: '/system/services',
+    icon: icon('ic_services'),
+  },
 ];
 
 export default navConfig;
