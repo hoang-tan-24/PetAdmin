@@ -3,6 +3,11 @@ import axios from 'axios';
 const shopLogin = async (email) => {
     try {
         const response = await axios.post(`https://localhost:7196/api/Employee/shopLogin?email=${email}`);
+
+        if (response.status !== 200) {
+            return false;
+        }
+
         const data = response.data;
         console.log("shop login api called success", data);
         localStorage.setItem('employee', JSON.stringify(data));

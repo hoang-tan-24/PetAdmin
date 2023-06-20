@@ -6,7 +6,7 @@ const adminLogin = async (username, password) => {
         const data = response.data;
         // console.log(data);
         if (data != null)
-        localStorage.setItem('admin', JSON.stringify(data));
+            localStorage.setItem('admin', JSON.stringify(data));
         return data;
     } catch (error) {
         console.error(error);

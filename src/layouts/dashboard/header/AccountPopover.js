@@ -38,6 +38,7 @@ export default function AccountPopover() {
     localStorage.setItem('user', JSON.stringify(null));
     localStorage.setItem('profile', JSON.stringify(null));
     localStorage.setItem('employee', JSON.stringify(null));
+    localStorage.setItem('admin', JSON.stringify(null));
     window.location.href = '/login';
   };
 
@@ -61,7 +62,7 @@ export default function AccountPopover() {
 
     handleClose();
   };
-
+  const admin = JSON.parse(localStorage.getItem('admin'));
   return (
     <>
       <IconButton
@@ -114,11 +115,18 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
+
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option, index) => (
-            <MenuItem key={option.label} onClick={() => handleMenuItemClick(index)}>
-              {option.label}
-            </MenuItem>
+            admin ? (
+              <MenuItem key={option.label} sx={{ opacity: 0.5 }}>
+                {option.label}
+              </MenuItem>
+            ) : (
+              <MenuItem key={option.label} onClick={() => handleMenuItemClick(index)}>
+                {option.label}
+              </MenuItem>
+            )
           ))}
         </Stack>
 
