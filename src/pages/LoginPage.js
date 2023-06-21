@@ -102,7 +102,7 @@ export default function LoginPage() {
         {mdUp && (
           <StyledSection>
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
-              Hi, Welcome PETUNI
+              Chào mừng quay trở lại PETUNI
             </Typography>
             <img src="/assets/illustrations/illustration_login.png" alt="login" />
           </StyledSection>
@@ -111,12 +111,12 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Đăng nhập để đến trang PETUNI
+              Đăng nhập đến trang cho nhà cung cấp
             </Typography>
 
             <Typography variant="body2" sx={{ mb: 5 }}>
-              Bạn chưa có tạo tài khoản {''}
-              <Link variant="subtitle2">Tạo tài khoản</Link>
+              {''}
+              {/* <Link variant="subtitle2">Tạo tài khoản</Link> */}
             </Typography>
 
             <Stack direction="row" spacing={2}>
@@ -128,7 +128,7 @@ export default function LoginPage() {
 
             <Divider sx={{ my: 3 }}>
               <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                HOẶC
+                HOẶC QUẢN TRỊ HỆ THỐNG
               </Typography>
             </Divider>
 

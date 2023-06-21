@@ -43,7 +43,7 @@ export default function AccountPopover() {
     if (menuItemLabel === 'Home') {
       // Navigate to the Home page
       navigate('/');
-    } else if (menuItemLabel === 'Profile') {
+    } else if (menuItemLabel === 'Thông tin cửa hàng') {
       // Navigate to the Profile page
       navigate('/dashboard/profile');
     } else if (menuItemLabel === 'Settings') {

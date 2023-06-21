@@ -233,6 +233,11 @@ export default function UserPage() {
       </Helmet>
       <ToastContainer />
       <Container>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+          <Typography variant="h4" gutterBottom>
+            Đơn hàng
+          </Typography>
+        </Stack>
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 

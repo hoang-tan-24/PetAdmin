@@ -44,12 +44,12 @@ export default function LoginForm() {
     <>
 
       <Stack spacing={3}>
-        <TextField id="username" name="username" label="username" />
+        <TextField id="username" name="username" label="Tài khoản" />
         <ToastContainer />
         <TextField
           id="password"
           name="password"
-          label="Password"
+          label="Mật khẩu"
           type={showPassword ? 'text' : 'password'}
           InputProps={{
             endAdornment: (
@@ -63,11 +63,17 @@ export default function LoginForm() {
         />
       </Stack>
 
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+      {/* <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
         <Checkbox name="remember" label="Remember me" />
         <Link variant="subtitle2" underline="hover">
           Quên mật khẩu?
         </Link>
+      </Stack> */}
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
+        {/* <Checkbox name="remember" label="Remember me" />
+        <Link variant="subtitle2" underline="hover">
+          Quên mật khẩu?
+        </Link> */}
       </Stack>
 
       <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={handleClick}>
