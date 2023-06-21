@@ -151,7 +151,7 @@ export default function UserPage() {
 
         const productData = {
             Name: shopName,
-           
+
             Balance: balance,
             Quantity: quantity,
             PetTypeId: petTypeId,
@@ -219,7 +219,7 @@ export default function UserPage() {
         updateShopStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 700);
     }
 
 
@@ -377,9 +377,9 @@ export default function UserPage() {
             <Container>
                 <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
                     <Typography variant="h4" gutterBottom>
-                        Sản phẩm
+                        Cửa hàng
                     </Typography>
-                    
+
                 </Stack>
 
                 <Card>
@@ -399,7 +399,7 @@ export default function UserPage() {
                                 />
                                 <TableBody>
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                                        const {  id, name, address, email, phone, balance, image, status } = row;
+                                        const { id, name, address, email, phone, balance, image, status } = row;
                                         const selectedProduct = selected.indexOf(id) !== -1;
 
                                         return (
@@ -500,7 +500,7 @@ export default function UserPage() {
                     },
                 }}
             >
-                
+
                 {editedStatus === 2 && (
                     <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
@@ -512,7 +512,7 @@ export default function UserPage() {
                     <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
                         Cấm
-                    </MenuItem> 
+                    </MenuItem>
                 )}
 
                 {editedStatus === 0 && (
@@ -524,7 +524,7 @@ export default function UserPage() {
 
             </Popover>
 
-            
+
         </>
     );
 }
