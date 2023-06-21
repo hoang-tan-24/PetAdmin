@@ -237,6 +237,19 @@ const Calendar = () => {
         return color;
     };
 
+    function formatDate(date) {
+        const formattedDate = new Date(date);
+        const day = formattedDate.getDate();
+        const month = formattedDate.getMonth() + 1; // Months are zero-based
+        const year = formattedDate.getFullYear();
+        const hours = formattedDate.getHours();
+        const minutes = formattedDate.getMinutes();
+
+        const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`; // Add leading zero if minutes is a single digit
+
+        return `${day}/${month}/${year} ${formattedTime}`;
+    }
+
 
     return (
         <div style={styles.wrap}>
@@ -280,11 +293,11 @@ const Calendar = () => {
                         <tbody>
                             <tr style={{ paddingBottom: '10px' }}>
                                 <td style={{ paddingRight: '30px' }}>Thời gian bắt đầu:</td>
-                                <td>{new Date(orderedSlotStart).toLocaleString()}</td>
+                                <td>{formatDate(orderedSlotStart)}</td>
                             </tr>
                             <tr style={{ paddingBottom: '10px' }}>
                                 <td style={{ paddingRight: '30px' }}>Thời gian kết thúc:</td>
-                                <td>{new Date(orderedSlotEnd).toLocaleString()}</td>
+                                <td>{formatDate(orderedSlotEnd)}</td>
                             </tr>
 
                             <tr style={{ paddingBottom: '10px' }}>
