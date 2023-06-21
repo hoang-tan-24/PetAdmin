@@ -9,11 +9,16 @@ import 'react-toastify/dist/ReactToastify.css';
 // hooks
 import useResponsive from '../hooks/useResponsive';
 // components
+import { shopLogin } from '../components/postAPI/shopLogin';
+import useGgPf from '../components/getAPI/getGoogleLogin';
+import { getGgPf } from '../components/getAPI/ggPfWithComponent';
 
 import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+
+
 
 
 
@@ -55,38 +60,75 @@ const StyledContent = styled('div')(({ theme }) => ({
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
   const [user, setUser] = useState([]);
+  const [employee, setEmployee] = useState([]);
+  const [profile, setProfile] = useState([]);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log('Login Success:', codeResponse);
       setUser(codeResponse);
       console.log("lay duoc user")
-
-      // localStorage.setItem('user', JSON.stringify(user));
-      // console.log("user khac null")
-
-      // if (user.access_token != null) {
-      //   console.log("user khac null")
-      //   window.location.href = '/dashboard/app';
-      // }
-      // toast.error('Login Failed! Wrong username or password.');
     },
     onError: (error) => console.log('Login Failed:', error)
-  });
+  })
+
+
+
   useEffect(() => {
+
+
+
     if (user && user.access_token) {
       console.log('User is logged in:', user);
       localStorage.setItem('user', JSON.stringify(user));
-      window.location.href = '/dashboard/app';
+      const call = getGgPf(user.access_token);
+      console.log(call);
+      setProfile(call);
     }
 
-  }, [user]);
+    if (profile && profile.email && employee == null) {
+      console.log("profile", profile)
+      const callSL = shopLogin(profile.email);
+      console.log(callSL);
+      setEmployee(callSL);
+    }
+    // if (profile == null) {
+    //   const pf = JSON.parse(localStorage.getItem('profile'));
+    //   setProfile(pf);
+    //   console.log(pf);
+    // }
+    // if (employee == null && profile) {
+    //   const emp = JSON.parse(localStorage.getItem('employee'));
+    //   console.log("emp", emp)
+    //   setEmployee(emp)
+    // }
+    if (employee && profile) {
+      console.log(employee)
+      setLoginSuccess(true)
+      setEmployee(null);
+      setUser(null);
+      setProfile(null);
+      // window.location.href = '/dashboard/app';
+    }
+    if (loginSuccess) {
+      console.log("chuyen trang")
+      // window.location.href = '/dashboard/app';
+      setLoginSuccess(false)
+    }
+  }, [user, profile, employee, loginSuccess]);
+
+
   const logOut = () => {
     googleLogout();
     localStorage.setItem('user', JSON.stringify(null));
     localStorage.setItem('profile', JSON.stringify(null));
     localStorage.setItem('employee', JSON.stringify(null));
     localStorage.setItem('admin', JSON.stringify(null));
+    console.log("logout");
+    setEmployee(null);
+    setUser(null);
+    setProfile(null);
   };
   return (
     <>
@@ -124,6 +166,7 @@ export default function LoginPage() {
               <Button fullWidth size="large " color="inherit" variant="outlined" onClick={() => login()}>
                 <Iconify icon="eva:google-fill" color="#DF3E30" width={22} height={22} />
               </Button>
+              <button onClick={logOut}>logout</button>
             </Stack>
 
             <Divider sx={{ my: 3 }}>
