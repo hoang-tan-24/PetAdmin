@@ -48,13 +48,13 @@ import { updateUserStatus } from '../components/putAPI/updateUserStatus';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-    { id: 'email', label: 'Email', alignRight: false },
-    { id: 'phone', label: 'Số điện thoại', alignRight: false },
-    { id: 'address', label: 'Địa chỉ', alignRight: false },
-    { id: 'googleId', label: 'Google Id', alignRight: false },
-    { id: 'balance', label: 'Số dư (VND)', alignRight: false },
-    { id: 'status', label: 'Trạng thái', alignRight: false },
-    { id: '' },
+  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'phone', label: 'Số điện thoại', alignRight: false },
+  { id: 'address', label: 'Địa chỉ', alignRight: false },
+  { id: 'googleId', label: 'Google Id', alignRight: false },
+  { id: 'balance', label: 'Số dư (VND)', alignRight: false },
+  { id: 'status', label: 'Trạng thái', alignRight: false },
+  { id: '' },
 ];
 
 // ----------------------------------------------------------------------
@@ -192,7 +192,7 @@ export default function UserPage() {
     setOpenPopup(true);
   };
 
- const handleOpenMenu = (event, id, email, phone, address, googleId, balance, status) => {
+  const handleOpenMenu = (event, id, email, phone, address, googleId, balance, status) => {
     setOpen(event.currentTarget);
     setEditedAddress(address);
     setEditedEmail(email);
@@ -202,13 +202,10 @@ export default function UserPage() {
     setEditedId(id);
     setEditedGoogleId(googleId);
 
-    if (status === 0 || status === 1) {
-        setUpdatedStatus(2);
-    } else if (status === 2) {
-        setUpdatedStatus(0);
-    } else {
-        setUpdatedStatus(status);
-    }
+    if (status === 0) {
+      setUpdatedStatus(1);
+    } else
+      setUpdatedStatus(0);
   };
 
   const handleUpdateStatus = () => {
@@ -392,8 +389,8 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Người dùng
           </Typography>
-          
-          
+
+
         </Stack>
 
         <Card>
@@ -413,7 +410,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const {  id, email, phone, address, googleId, balance, status } = row;
+                    const { id, email, phone, address, googleId, balance, status } = row;
                     const selectedService = selected.indexOf(id) !== -1;
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedService}>
@@ -434,12 +431,11 @@ export default function UserPage() {
                         <TableCell align="left">{balance}</TableCell>
 
                         <TableCell align="left">
-                          {status === 0 && <Label color="error">Tạm ngừng </Label>}
+                          {status === 0 && <Label color="error"> Đang khóa  </Label>}
                           {status === 1 && <Label color="success">Đang hoạt động</Label>}
-                          {status === 2 && <Label color="error">Ẩn </Label>}
                         </TableCell>
 
-                        
+
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, email, phone, address, googleId, balance, status)}>
@@ -504,7 +500,7 @@ export default function UserPage() {
         PaperProps={{
           sx: {
             p: 1,
-            width: 140,
+            width: 230,
             '& .MuiMenuItem-root': {
               px: 1,
               typography: 'body2',
@@ -513,30 +509,24 @@ export default function UserPage() {
           },
         }}
       >
-                {editedStatus === 2 && (
-                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
-                        Bỏ cấm
-                    </MenuItem>
-                )}
 
-                {editedStatus === 1 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Khóa tài khoản
+          </MenuItem>
+        )}
 
-                {editedStatus === 0 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+            Mở khóa tài khoản
+          </MenuItem>
+        )}
 
       </Popover>
 
-      
+
 
     </>
   );
