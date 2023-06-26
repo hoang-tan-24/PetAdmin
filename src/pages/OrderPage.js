@@ -110,7 +110,7 @@ export default function UserPage() {
   const [email, setEmail] = useState('');
   const [orderedDate, setOrderedDate] = useState(0);
   const [status, setStatus] = useState(1);
-  const [shopId, setShopId] = useState(1);
+  const [shopId, setShopId] = useState(-1);
   // orderdetail
 
   const [orderDetail, setOrderDetail] = useState(false);

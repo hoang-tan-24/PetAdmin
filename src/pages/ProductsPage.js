@@ -117,7 +117,7 @@ export default function UserPage() {
   const [productPrice, setProductPrice] = useState(0);
   const [petTypeId, setPetTypeId] = useState(5);
   const [productImage, setProductImage] = useState('');
-  const [productShopId, setProductShopId] = useState(1);
+  const [productShopId, setProductShopId] = useState(0);
 
   // edit
   const [editedId, setEditedId] = useState(1);

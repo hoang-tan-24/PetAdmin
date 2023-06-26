@@ -134,7 +134,7 @@ const Calendar = () => {
     const [openPopup, setOpenPopup] = useState(false);
 
 
-    const [shopId, setShopId] = useState(2);
+    const [shopId, setShopId] = useState(-1);
     const employee = JSON.parse(localStorage.getItem('employee'));
     if (employee && employee.shopId !== shopId) {
         console.log("employee co shop id la : ", employee.shopId)

@@ -118,7 +118,7 @@ export default function UserPage() {
     const [productPrice, setProductPrice] = useState(0);
     const [petTypeId, setPetTypeId] = useState(5);
     const [productImage, setProductImage] = useState('');
-    const [shopId, setShopId] = useState(1);
+    const [shopId, setShopId] = useState(0);
     const [address, setAddress] = useState('');
 
     // edit
@@ -164,7 +164,7 @@ export default function UserPage() {
         console.log(res)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 700);
     };
 
     const handleProductNameChange = (event) => {
@@ -226,7 +226,7 @@ export default function UserPage() {
         updatePetStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 700);
     }
 
 
@@ -311,7 +311,7 @@ export default function UserPage() {
 
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 700);
     }
 
 

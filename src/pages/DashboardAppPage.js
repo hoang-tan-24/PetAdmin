@@ -26,7 +26,7 @@ export default function DashboardAppPage() {
   console.log(user)
   const profile = useGgPf(user.access_token)
   console.log(profile)
-  const [shopId, setShopId] = useState(2);
+  const [shopId, setShopId] = useState(0);
 
   const callSL = shopLogin(profile.email)
   console.log(callSL)

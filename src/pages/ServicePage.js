@@ -113,7 +113,7 @@ export default function UserPage() {
   const [duration, setDuration] = useState(0);
   const [serviceDescription, setServiceDescription] = useState('');
   const [petTypeId, setPetTypeId] = useState(5);
-  const [serviceShopId, setServiceShopId] = useState(1);
+  const [serviceShopId, setServiceShopId] = useState(-1);
   const [maxSlot, setMaxSlot] = useState(0);
   const [serviceImage, setServiceImage] = useState('');
   const [status, setStatus] = useState(0);
