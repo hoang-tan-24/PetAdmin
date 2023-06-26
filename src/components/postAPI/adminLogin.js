@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const adminLogin = async (username, password) => {
     try {
-        const promise = axios.post(`https://api20230626100239.azurewebsites.net/api/SystemAdmin?username=${username}&password=${password}`);
+        const promise = axios.post(`https://petuni-api.azurewebsites.net/api/SystemAdmin?username=${username}&password=${password}`);
 
         toast.promise(
             promise,

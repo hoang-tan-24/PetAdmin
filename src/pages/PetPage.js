@@ -151,7 +151,7 @@ export default function UserPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/Pet?ShopId=${shopId}`);
+                const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Pet?ShopId=${shopId}`);
                 const data = response.data;
                 setPETLISTGETBYSHOPID(data);
                 setOpenReturn(true)

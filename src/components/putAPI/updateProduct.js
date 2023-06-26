@@ -8,7 +8,7 @@ const updateProduct = async (id, productData) => {
         // toast.success('Chỉnh sửa sản phẩm thành công!');
         // return response.data;
         const promise = axios.put(
-            `https://api20230626100239.azurewebsites.net/api/Product/${id}`,
+            `https://petuni-api.azurewebsites.net/api/Product/${id}`,
             productData
         );
 

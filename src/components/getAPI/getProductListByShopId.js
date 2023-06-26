@@ -30,7 +30,7 @@ const useProductListByShopId = (shopId) => {
   useEffect(() => {
     const fetchNameProducts = async () => {
       try {
-        const response = await axios.get(`https://localhost:7196/api/Product?ShopId=${shopId}`);
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Product?ShopId=${shopId}`);
         const data = response.data;
         setNameProducts(data);
       } catch (error) {
