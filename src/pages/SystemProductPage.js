@@ -202,11 +202,11 @@ export default function UserPage() {
     setEditedImage(image)
 
     if (status === 0 || status === 1) {
-        setUpdatedStatus(2);
+      setUpdatedStatus(2);
     } else if (status === 2) {
-        setUpdatedStatus(0);
+      setUpdatedStatus(0);
     } else {
-        setUpdatedStatus(status);
+      setUpdatedStatus(status);
     }
   };
 
@@ -214,7 +214,7 @@ export default function UserPage() {
     updateProductStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
 
@@ -376,8 +376,8 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Sản phẩm
           </Typography>
-          
-          
+
+
         </Stack>
 
         <Card>
@@ -417,14 +417,14 @@ export default function UserPage() {
                         <TableCell align="left">{category}</TableCell>
                         {
                           shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                          const { id, name } = row;
-                          if (id === shopId)return (
-                            <TableCell align="left">{name}</TableCell>
-                              );
+                            const { id, name } = row;
+                            if (id === shopId) return (
+                              <TableCell align="left">{name}</TableCell>
+                            );
                             return (
                               null
-                              );
-                            }
+                            );
+                          }
                           )
                         }
                         <TableCell align="left">{price}</TableCell>
@@ -515,34 +515,34 @@ export default function UserPage() {
           },
         }}
       >
-        
 
 
-                {editedStatus === 2 && (
-                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
-                        Bỏ cấm
-                    </MenuItem>
-                )}
 
-                {editedStatus === 1 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 2 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+            Bỏ cấm
+          </MenuItem>
+        )}
 
-                {editedStatus === 0 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
+
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
 
 
       </Popover>
 
-      
+
 
     </>
   );

@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const createPet = async (createData) => {
     try {
-        const response = await axios.post('https://localhost:7196/api/Pet', createData);
+        const response = await axios.post('https://api20230626100239.azurewebsites.net/api/Pet', createData);
         toast.success('Thêm thú cưng thành công!');
         return response.data;
     } catch (error) {

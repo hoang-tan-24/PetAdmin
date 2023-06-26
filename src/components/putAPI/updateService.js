@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const updateService = async (id, serviceData) => {
     try {
-        const response = await axios.put(`https://localhost:7196/api/Service/${id}`, serviceData);
+        const response = await axios.put(`https://api20230626100239.azurewebsites.net/api/Service/${id}`, serviceData);
         toast.success('Chỉnh sửa dịch vụ thành công!');
         return response.data;
     } catch (error) {

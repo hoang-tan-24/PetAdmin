@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { googleLogout, useGoogleLogin } from '@react-oauth/google';
 import { Helmet } from 'react-helmet-async';
@@ -55,7 +56,8 @@ const StyledContent = styled('div')(({ theme }) => ({
 export default function LoginPage() {
   const mdUp = useResponsive('up', 'md');
   const [user, setUser] = useState([]);
-
+  const [profile, setProfile] = useState([]);
+  const [employee, setEmployee] = useState([]);
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => {
       console.log('Login Success:', codeResponse);
@@ -74,13 +76,64 @@ export default function LoginPage() {
     onError: (error) => console.log('Login Failed:', error)
   });
   useEffect(() => {
+    const getPf = async (userAccessToken) => {
+      try {
+        const response = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${userAccessToken}`, {
+          headers: {
+            Authorization: `Bearer ${userAccessToken}`,
+            Accept: 'application/json'
+          }
+        });
+        const data = response.data;
+        localStorage.setItem('profile', JSON.stringify(data));
+        setProfile(data);
+        console.log('Get success google api profile:', data)
+        return data;
+
+      } catch (error) {
+        console.error('Error fetching:', error);
+        return null;
+      }
+    };
+    const shopLogin = async (email) => {
+      try {
+        const response = await axios.post(`https://api20230626100239.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
+        const data = response.data;
+        localStorage.setItem('employee', JSON.stringify(data));
+        toast.success('Đăng nhập thành công!');
+        setEmployee(data)
+        console.log("employee in shop login", data)
+        return data;
+      } catch (error) {
+        console.error('Error fetching:', error);
+        toast.error('Đăng nhập thất bại! Vui lòng thử lại!');
+        return null;
+      }
+    };
+
     if (user && user.access_token) {
       console.log('User is logged in:', user);
       localStorage.setItem('user', JSON.stringify(user));
-      window.location.href = '/dashboard/app';
+      setUser(null)
+      const res = getPf(user.access_token);
+      console.log(res)
+    }
+    if (profile && profile.email) {
+      console.log('profile : ', profile);
+      shopLogin(profile.email);
+      setProfile(null);
+    }
+    if (employee && employee.shopId) {
+      console.log('employee : ', employee);
+      console.log('chuyen trang');
+      setEmployee(null);
+      setTimeout(() => {
+        window.location.href = '/dashboard/app'; // Reload the page after 1 second
+      }, 1000);
     }
 
-  }, [user]);
+
+  }, [user, profile, employee]);
   const logOut = () => {
     googleLogout();
     localStorage.setItem('user', JSON.stringify(null));

@@ -212,7 +212,7 @@ export default function UserPage() {
     updateUserStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
   const handleCloseMenu = () => {
     setOpen(null);

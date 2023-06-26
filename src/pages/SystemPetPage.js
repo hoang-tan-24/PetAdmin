@@ -202,11 +202,11 @@ export default function UserPage() {
         updatePetStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 2000);
     }
-    
 
-    
+
+
 
     const handleCloseMenu = () => {
         setOpen(null);
@@ -296,7 +296,7 @@ export default function UserPage() {
 
 
 
-    
+
 
 
 
@@ -319,9 +319,9 @@ export default function UserPage() {
                     <Typography variant="h4" gutterBottom>
                         Thú cưng
                     </Typography>
-                   
+
                 </Stack>
-                
+
                 <Card>
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
@@ -358,13 +358,13 @@ export default function UserPage() {
                                                 {
                                                     shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                                         const { id, name } = row;
-                                                        if (id === shopId)return (
+                                                        if (id === shopId) return (
                                                             <TableCell align="left">{name}</TableCell>
                                                         );
                                                         return (
                                                             null
                                                         );
-                                                        }
+                                                    }
                                                     )
                                                 }
                                                 <TableCell align="left">
@@ -397,7 +397,7 @@ export default function UserPage() {
                                                         <Iconify icon={'eva:more-vertical-fill'} />
                                                     </IconButton>
                                                 </TableCell>
-                                               
+
                                             </TableRow>
                                         );
                                     })}
@@ -488,7 +488,7 @@ export default function UserPage() {
 
             </Popover>
 
-           
+
 
         </>
     );

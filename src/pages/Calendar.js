@@ -93,7 +93,7 @@
 // export default Calendar;
 
 
-
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
 import { DayPilot, DayPilotCalendar, DayPilotNavigator } from "@daypilot/daypilot-lite-react";
 import "./CalendarStyles.css";
@@ -140,15 +140,36 @@ const Calendar = () => {
         console.log("employee co shop id la : ", employee.shopId)
         setShopId(employee.shopId)
     }
-    const res = useOrderedSlot(shopId)
-    console.log("order slot get from api", res)
+
+
+
+    // const res = useOrderedSlot(shopId)
+    // console.log("order slot get from api", res)
+
+
+
+    const [openReturn, setOpenReturn] = useState(false);
+    const [res, setRes] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/OrderSlot?shopId=${shopId}`);
+                const data = response.data;
+                setRes(data);
+                setOpenReturn(true)
+                console.log('get ok from ', response.config.url);
+                console.log("data : ", data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        if (shopId !== -1)
+            fetchData();
+    }, [shopId]);
+
 
     const handleClickCalendar = (id) => {
         setOrderedSlotId(id);
-        const slotNo = res[id - 1];
-        console.log(res);
-        console.log(slotNo);
-        console.log(events);
         setOpenPopup(true);
     };
 
@@ -250,7 +271,22 @@ const Calendar = () => {
         return `${day}/${month}/${year} ${formattedTime}`;
     }
 
-
+    if (!openReturn) {
+        // Render loading or placeholder content while waiting for the data
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '60vh',
+                    fontSize: '24px',
+                }}
+            >
+                <div>Đang tải...</div>
+            </div>
+        );
+    }
     return (
         <div style={styles.wrap}>
             <div style={styles.left}>

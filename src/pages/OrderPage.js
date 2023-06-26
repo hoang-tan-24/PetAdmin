@@ -144,7 +144,7 @@ export default function UserPage() {
     toast.success('Cập nhật thành công!');
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700); // 1000 milliseconds = 1 second
+    }, 2000); // 1000 milliseconds = 1 second
   }
 
   const handleCloseMenu = () => {

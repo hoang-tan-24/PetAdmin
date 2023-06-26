@@ -219,7 +219,7 @@ export default function UserPage() {
         updateShopStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-        }, 700);
+        }, 2000);
     }
 
 

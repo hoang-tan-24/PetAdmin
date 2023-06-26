@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -143,7 +144,27 @@ export default function UserPage() {
     }
 
     // lay duoc roi
-    const PETLISTGETBYSHOPID = usePetListByShopId(shopId);
+    // const PETLISTGETBYSHOPID = usePetListByShopId(shopId);
+
+    const [openReturn, setOpenReturn] = useState(false);
+    const [PETLISTGETBYSHOPID, setPETLISTGETBYSHOPID] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/Pet?ShopId=${shopId}`);
+                const data = response.data;
+                setPETLISTGETBYSHOPID(data);
+                setOpenReturn(true)
+                console.log('get ok from ', response.config.url);
+                console.log("data : ", data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        if (shopId !== -1)
+            fetchData();
+    }, [shopId]);
+
 
     const handleCreateItem = async (event) => {
         // event.preventDefault();
@@ -164,7 +185,7 @@ export default function UserPage() {
         console.log(res)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-        }, 700);
+        }, 2000);
     };
 
     const handleProductNameChange = (event) => {
@@ -226,7 +247,7 @@ export default function UserPage() {
         updatePetStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-        }, 700);
+        }, 2000);
     }
 
 
@@ -311,7 +332,7 @@ export default function UserPage() {
 
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-        }, 700);
+        }, 2000);
     }
 
 
@@ -354,7 +375,22 @@ export default function UserPage() {
     const filteredUsers = applySortFilter(PETLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-
+    if (!openReturn) {
+        // Render loading or placeholder content while waiting for the data
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '60vh',
+                    fontSize: '24px',
+                }}
+            >
+                <div>Đang tải...</div>
+            </div>
+        );
+    }
     return (
         <>
             <Helmet>

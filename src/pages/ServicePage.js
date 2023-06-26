@@ -160,7 +160,7 @@ export default function UserPage() {
     console.log(res)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   };
 
   const handleServiceNameChange = (event) => {
@@ -219,7 +219,7 @@ export default function UserPage() {
     updateServiceStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
   const handleCloseMenu = () => {
     setOpen(null);
@@ -327,7 +327,7 @@ export default function UserPage() {
     console.log(res)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
   console.log(window.onload)

@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const adminLogin = async (username, password) => {
     try {
-        const response = await axios.post(`https://localhost:7196/api/SystemAdmin?username=${username}&password=${password}`);
+        const response = await axios.post(`https://api20230626100239.azurewebsites.net/api/SystemAdmin?username=${username}&password=${password}`);
         const data = response.data;
         // console.log(data);
         if (data != null)

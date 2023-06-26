@@ -187,7 +187,7 @@ export default function UserPage() {
     setOpenPopup(true);
   };
 
- const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
+  const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
     setOpen(event.currentTarget);
     setEditedName(name);
     setEditedCategory(categoryId);
@@ -201,11 +201,11 @@ export default function UserPage() {
     setEditedDuration(duration)
 
     if (status === 0 || status === 1) {
-        setUpdatedStatus(2);
+      setUpdatedStatus(2);
     } else if (status === 2) {
-        setUpdatedStatus(0);
+      setUpdatedStatus(0);
     } else {
-        setUpdatedStatus(status);
+      setUpdatedStatus(status);
     }
   };
 
@@ -213,7 +213,7 @@ export default function UserPage() {
     updateServiceStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
   const handleCloseMenu = () => {
     setOpen(null);
@@ -396,8 +396,8 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Dịch vụ
           </Typography>
-          
-          
+
+
         </Stack>
 
         <Card>
@@ -433,17 +433,17 @@ export default function UserPage() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        
+
                         {
                           shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                          const { id, name } = row;
-                          if (id === shopId)return (
-                            <TableCell align="left">{name}</TableCell>
-                              );
+                            const { id, name } = row;
+                            if (id === shopId) return (
+                              <TableCell align="left">{name}</TableCell>
+                            );
                             return (
                               null
-                              );
-                            }
+                            );
+                          }
                           )
                         }
                         <TableCell align="left">
@@ -468,7 +468,7 @@ export default function UserPage() {
                           {status === 2 && <Label color="error">Ẩn </Label>}
                         </TableCell>
 
-                        
+
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status)}>
@@ -542,30 +542,30 @@ export default function UserPage() {
           },
         }}
       >
-                {editedStatus === 2 && (
-                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
-                        Bỏ cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 2 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+            Bỏ cấm
+          </MenuItem>
+        )}
 
-                {editedStatus === 1 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
 
-                {editedStatus === 0 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
 
       </Popover>
 
-      
+
 
     </>
   );

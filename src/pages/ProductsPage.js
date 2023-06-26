@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -139,9 +140,27 @@ export default function UserPage() {
     console.log("employee co shop id la : ", employee.shopId)
     setProductShopId(employee.shopId)
   }
+  const [openReturn, setOpenReturn] = useState(false);
+  const [PRODUCTLISTGETBYSHOPID, setPRODUCTLISTGETBYSHOPID] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/Product?ShopId=${productShopId}`);
+        const data = response.data;
+        setPRODUCTLISTGETBYSHOPID(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setPRODUCTLISTGETBYSHOPID([]);
+      }
+    };
+    if (productShopId !== 0)
+      fetchData();
+  }, [productShopId]);
 
-  // lay duoc roi
-  const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
+  // // lay duoc roi
+  // const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
 
   const handleCreateProduct = async (event) => {
     // event.preventDefault();
@@ -162,7 +181,7 @@ export default function UserPage() {
     console.log(res)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   };
 
   const handleProductNameChange = (event) => {
@@ -220,7 +239,7 @@ export default function UserPage() {
     updateProductStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
 
@@ -320,7 +339,7 @@ export default function UserPage() {
 
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
   const handleEditIncreaseQuantity = () => {
@@ -369,7 +388,22 @@ export default function UserPage() {
   const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
+    );
+  }
   return (
     <>
       <Helmet>

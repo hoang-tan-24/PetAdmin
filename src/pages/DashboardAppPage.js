@@ -12,46 +12,63 @@ import {
   AppWidgetSummary,
 } from '../sections/@dashboard/app';
 
-import useGgPf from '../components/getAPI/getGoogleLogin';
-import { shopLogin } from '../components/postAPI/shopLogin';
-import useDashboard from '../components/getAPI/getDashboard';
-
 
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-  const user = JSON.parse(localStorage.getItem('user'));
-  console.log(user)
-  const profile = useGgPf(user.access_token)
-  console.log(profile)
+
   const [shopId, setShopId] = useState(0);
 
-  const callSL = shopLogin(profile.email)
-  console.log(callSL)
+  const profile = JSON.parse(localStorage.getItem('profile'));
 
-  const DASHBOARD = useDashboard(shopId)
-  console.log("shopid", shopId)
-  console.log("dashboard tuong ung", DASHBOARD)
+  // const DASHBOARD = useDashboard(shopId)
 
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== shopId) {
     console.log("employee co shop id la : ", employee.shopId)
     setShopId(employee.shopId)
   }
-  // useEffect(() => {
-  //   callSL.catch((error) => {
-  //     if (axios.isAxiosError(error)) {
-  //       // Axios error occurred
-  //       console.log("Axios error");
-  //       window.location.href = '/login';
-  //     }
-  //   });
-  // }, [callSL]);
+
+  const [openReturn, setOpenReturn] = useState(false);
+  const [DASHBOARD, setDASHBOARD] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/Dashboard?shopId=${shopId}`);
+        const data = response.data;
+        setDASHBOARD(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+        console.log("data : ", data)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    if (shopId !== 0)
+      fetchData();
+  }, [shopId]);
 
   const defaultIntValue = 0;
   const defaultDecimalValue = 0;
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Helmet>
