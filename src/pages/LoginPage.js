@@ -97,16 +97,30 @@ export default function LoginPage() {
     };
     const shopLogin = async (email) => {
       try {
-        const response = await axios.post(`https://api20230626100239.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
+
+        const promise = axios.post(`https://api20230626100239.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
+
+        toast.promise(
+          promise,
+          {
+            pending: 'Đang xử lý...',
+            success: 'Đăng nhập thành công!',
+            error: 'Đăng nhập thất bại! Vui lòng thử lại!',
+          },
+          { toastId: 'LoginToast' }
+        );
+
+        const response = await promise;
         const data = response.data;
+
         localStorage.setItem('employee', JSON.stringify(data));
-        toast.success('Đăng nhập thành công!');
+        // toast.success('Đăng nhập thành công!');
         setEmployee(data)
         console.log("employee in shop login", data)
         return data;
       } catch (error) {
         console.error('Error fetching:', error);
-        toast.error('Đăng nhập thất bại! Vui lòng thử lại!');
+        // toast.error('Đăng nhập thất bại! Vui lòng thử lại!');
         return null;
       }
     };
