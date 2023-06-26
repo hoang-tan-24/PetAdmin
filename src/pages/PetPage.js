@@ -589,13 +589,13 @@ export default function UserPage() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
+                                                        Không tìm thấy
                                                     </Typography>
 
                                                     <Typography variant="body2">
-                                                        No results found for &nbsp;
+                                                        Không có kết quả cho từ khoá &nbsp;
                                                         <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                    <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
