@@ -258,6 +258,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số người dùng theo trang :"
           />
         </Card>
       </Container>

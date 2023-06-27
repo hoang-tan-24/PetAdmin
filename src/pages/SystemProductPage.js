@@ -139,6 +139,7 @@ export default function UserPage() {
   // lay duoc roi
   const [openReturn, setOpenReturn] = useState(false);
   const [PRODUCTLISTGETBYSHOPID, setPRODUCTLISTGETBYSHOPID] = useState([]);
+  const [isFailFromAPI, setIsFailFromAPI] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -150,6 +151,10 @@ export default function UserPage() {
             console.log("data : ", data)
         } catch (error) {
             console.error('Error fetching data:', error);
+            if (error.response.status !== 200) {
+              setIsFailFromAPI(true)
+              setOpenReturn(true)
+            }
         }
     };
     if (productShopId !== -1)
@@ -429,6 +434,13 @@ export default function UserPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
+                {(PRODUCTLISTGETBYSHOPID.length === 0 || isFailFromAPI === true) && (
+                    <TableRow>
+                      <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, image, name, category, quantity, price, petTypeId, status, description, shopId } = row;
                     const selectedProduct = selected.indexOf(id) !== -1;
@@ -526,6 +538,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số sản phẩm theo trang :"
           />
         </Card>
       </Container>
