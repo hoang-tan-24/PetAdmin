@@ -145,7 +145,7 @@ export default function UserPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`https://api20230626100239.azurewebsites.net/api/Product?ShopId=${productShopId}`);
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Product?ShopId=${productShopId}`);
         const data = response.data;
         setPRODUCTLISTGETBYSHOPID(data);
         setOpenReturn(true)
@@ -611,13 +611,13 @@ export default function UserPage() {
                           }}
                         >
                           <Typography variant="h6" paragraph>
-                            Not found
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho từ khoá &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                           </Typography>
                         </Paper>
                       </TableCell>

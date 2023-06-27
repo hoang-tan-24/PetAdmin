@@ -7,7 +7,7 @@ const useServiceListByShopId = (shopId) => {
   useEffect(() => {
     const fetchNameServices = async () => {
       try {
-        const response = await axios.get(`https://localhost:7196/api/Service?shopId=${shopId}`,{mode: 'cors'});
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Service?shopId=${shopId}`,{mode: 'cors'});
         const data = response.data;
         setNameServices(data);
       } catch (error) {

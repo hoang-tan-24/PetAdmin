@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -144,8 +145,24 @@ export default function UserPage() {
     const [editedPhone, setEditedPhone] = useState(0);
 
     // lay duoc roi
-    const PRODUCTLISTGETBYSHOPID = useShopListAdmin(productShopId);
-
+    const [openReturn, setOpenReturn] = useState(false);
+    const [PRODUCTLISTGETBYSHOPID, setPRODUCTLISTGETBYSHOPID] = useState([]);
+    useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Shop`);
+              const data = response.data;
+              setPRODUCTLISTGETBYSHOPID(data);
+              setOpenReturn(true)
+              console.log('get ok from ', response.config.url);
+              console.log("data : ", data)
+          } catch (error) {
+              console.error('Error fetching data:', error);
+          }
+      };
+      if (productShopId !== -1)
+          fetchData();
+    }, [productShopId]);
     const handleCreateProduct = async (event) => {
         // event.preventDefault();
 
@@ -367,7 +384,22 @@ export default function UserPage() {
     const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-
+    if (!openReturn) {
+        // Render loading or placeholder content while waiting for the data
+        return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '60vh',
+              fontSize: '24px',
+            }}
+          >
+            <div>Đang tải...</div>
+          </div>
+        );
+      }
     return (
         <>
             <Helmet>
@@ -453,13 +485,13 @@ export default function UserPage() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
+                                                        Không tìm thấy
                                                     </Typography>
 
                                                     <Typography variant="body2">
-                                                        No results found for &nbsp;
+                                                        Không có kết quả cho từ khoá &nbsp;
                                                         <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                        <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>

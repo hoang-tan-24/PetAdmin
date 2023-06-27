@@ -98,7 +98,7 @@ export default function LoginPage() {
     const shopLogin = async (email) => {
       try {
 
-        const promise = axios.post(`https://api20230626100239.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
+        const promise = axios.post(`https://petuni-api.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
 
         toast.promise(
           promise,

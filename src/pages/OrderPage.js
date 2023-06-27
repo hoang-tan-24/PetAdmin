@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 // @mui
 import {
   InputAdornment,
@@ -121,7 +122,26 @@ export default function UserPage() {
   const [description, setDescription] = useState('');
   const [time, setTime] = useState(0);
 
-  const getOrderListByShopId = useOrderListByShopId(shopId);
+  const [openReturn, setOpenReturn] = useState(false);
+  const [getOrderListByShopId, setGetOrderListByShopId] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Order/search?shopId=${shopId}`);
+            const data = response.data;
+            setGetOrderListByShopId(data);
+            setOpenReturn(true)
+            console.log('get ok from ', response.config.url);
+            console.log("data : ", data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    if (shopId !== -1)
+        fetchData();
+  }, [shopId]);
+
+
   console.log(getOrderListByShopId)
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== shopId) {
@@ -210,6 +230,22 @@ export default function UserPage() {
   const users = applySortFilter(getOrderListByShopId, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '60vh',
+                fontSize: '24px',
+            }}
+        >
+            <div>Đang tải...</div>
+        </div>
+    );
+}
   /* {showOrderDetail && (
     <>
       <Dialog open={open} onClose={handleClose}>
@@ -326,13 +362,13 @@ export default function UserPage() {
                           }}
                         >
                           <Typography variant="h6" paragraph>
-                            Not found
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho từ khoá &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                           </Typography>
                         </Paper>
                       </TableCell>

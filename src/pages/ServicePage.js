@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -138,7 +139,24 @@ export default function UserPage() {
   }
 
 
-  const serviceListGetByShopId = useServiceListByShopId(serviceShopId);
+  const [openReturn, setOpenReturn] = useState(false);
+  const [serviceListGetByShopId, setServiceListGetByShopId] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Service?shopId=${serviceShopId}`);
+            const data = response.data;
+            setServiceListGetByShopId(data);
+            setOpenReturn(true)
+            console.log('get ok from ', response.config.url);
+            console.log("data : ", data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+    if (serviceShopId !== -1)
+        fetchData();
+  }, [serviceShopId]);
 
   const handleCreateService = async (event) => {
     // event.preventDefault();
@@ -393,7 +411,22 @@ export default function UserPage() {
   const filteredUsers = applySortFilter(serviceListGetByShopId, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
+    );
+  }
   return (
     <>
       <Helmet>
@@ -634,14 +667,14 @@ export default function UserPage() {
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" paragraph>
-                            Not found
+                           <Typography variant="h6" paragraph>
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho từ khoá &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                           </Typography>
                         </Paper>
                       </TableCell>
