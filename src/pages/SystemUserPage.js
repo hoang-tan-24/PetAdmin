@@ -142,6 +142,7 @@ export default function UserPage() {
 
   const [openReturn, setOpenReturn] = useState(false);
   const [userListAdmin, setUserListAdmin] = useState([]);
+  const [isFailFromAPI, setIsFailFromAPI] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,6 +154,10 @@ export default function UserPage() {
         console.log("data : ", data)
       } catch (error) {
         console.error('Error fetching data:', error);
+        if (error.response.status !== 200) {
+          setIsFailFromAPI(true)
+          setOpenReturn(true)
+        }
       }
     };
     if (serviceShopId !== -1)
@@ -441,6 +446,13 @@ export default function UserPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
+                {(userListAdmin.length === 0 || isFailFromAPI === true) && (
+                    <TableRow>
+                      <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, email, phone, address, googleId, balance, status } = row;
                     const selectedService = selected.indexOf(id) !== -1;
@@ -519,6 +531,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số người dùng theo trang :"
           />
         </Card>
       </Container>
