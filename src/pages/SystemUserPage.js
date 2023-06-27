@@ -84,7 +84,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -144,19 +144,19 @@ export default function UserPage() {
   const [userListAdmin, setUserListAdmin] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/User`);
-            const data = response.data;
-            setUserListAdmin(data);
-            setOpenReturn(true)
-            console.log('get ok from ', response.config.url);
-            console.log("data : ", data)
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+      try {
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/User`);
+        const data = response.data;
+        setUserListAdmin(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+        console.log("data : ", data)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
     if (serviceShopId !== -1)
-        fetchData();
+      fetchData();
   }, [serviceShopId]);
   const handleCreateService = async (event) => {
     // event.preventDefault();

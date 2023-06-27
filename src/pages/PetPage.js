@@ -136,6 +136,8 @@ export default function UserPage() {
     const [editedImage, setEditedImage] = useState('image');
     const [editedAddress, setEditedAddress] = useState('');
 
+    const [openUpdateStatus, setOpenUpdateStatus] = useState(false);
+
 
     const employee = JSON.parse(localStorage.getItem('employee'));
     if (employee && employee.shopId !== shopId) {
@@ -159,6 +161,7 @@ export default function UserPage() {
                 console.log("data : ", data)
             } catch (error) {
                 console.error('Error fetching data:', error);
+                setOpenReturn(true)
             }
         };
         if (shopId !== -1)
@@ -233,6 +236,9 @@ export default function UserPage() {
         setEditedId(id)
         setEditedDescription(description)
         setEditedImage(image)
+
+        if (status !== 2)
+            setOpenUpdateStatus(true)
 
         if (status === 0) {
             setUpdatedStatus(1);
@@ -595,7 +601,7 @@ export default function UserPage() {
                                                     <Typography variant="body2">
                                                         Không có kết quả cho từ khoá &nbsp;
                                                         <strong>&quot;{filterName}&quot;</strong>.
-                                                    <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
+                                                        <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -642,14 +648,14 @@ export default function UserPage() {
                 </MenuItem>
 
 
-                {editedStatus === 1 && (
+                {editedStatus === 1 && openUpdateStatus !== false && (
                     <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
                         Xóa
                     </MenuItem>
                 )}
 
-                {editedStatus === 0 && (
+                {editedStatus === 0 && openUpdateStatus !== false && (
                     <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
                         <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
                         Mở lại

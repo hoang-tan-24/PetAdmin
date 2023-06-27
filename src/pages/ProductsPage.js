@@ -134,6 +134,7 @@ export default function UserPage() {
   const [editedDescription, setEditedDescription] = useState('productDescription');
   const [editedImage, setEditedImage] = useState('productImage');
 
+  const [openUpdateStatus, setOpenUpdateStatus] = useState(false);
 
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== productShopId) {
@@ -225,6 +226,9 @@ export default function UserPage() {
     setEditedId(id)
     setEditedDescription(description)
     setEditedImage(image)
+
+    if (status !== 2)
+      setOpenUpdateStatus(true)
 
     if (status === 0) {
       setUpdatedStatus(1);
@@ -636,6 +640,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số sản phẩm theo trang :"
           />
         </Card>
       </Container>
@@ -664,14 +669,14 @@ export default function UserPage() {
         </MenuItem>
 
 
-        {editedStatus === 1 && (
+        {editedStatus === 1 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
             Xóa
           </MenuItem>
         )}
 
-        {editedStatus === 0 && (
+        {editedStatus === 0 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
             Mở lại

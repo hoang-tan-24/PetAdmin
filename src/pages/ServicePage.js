@@ -131,6 +131,7 @@ export default function UserPage() {
   const [updatedStatus, setUpdatedStatus] = useState(0);
   const [editedStatus, setEditedStatus] = useState(0);
 
+  const [openUpdateStatus, setOpenUpdateStatus] = useState(false);
 
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== serviceShopId) {
@@ -143,19 +144,19 @@ export default function UserPage() {
   const [serviceListGetByShopId, setServiceListGetByShopId] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Service?shopId=${serviceShopId}`);
-            const data = response.data;
-            setServiceListGetByShopId(data);
-            setOpenReturn(true)
-            console.log('get ok from ', response.config.url);
-            console.log("data : ", data)
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+      try {
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Service?shopId=${serviceShopId}`);
+        const data = response.data;
+        setServiceListGetByShopId(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+        console.log("data : ", data)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
     if (serviceShopId !== -1)
-        fetchData();
+      fetchData();
   }, [serviceShopId]);
 
   const handleCreateService = async (event) => {
@@ -223,6 +224,9 @@ export default function UserPage() {
     setEditedDescription(description)
     setEditedImage(image)
     setEditedDuration(duration)
+
+    if (status !== 2)
+      setOpenUpdateStatus(true)
 
     if (status === 0) {
       setUpdatedStatus(1);
@@ -667,7 +671,7 @@ export default function UserPage() {
                             textAlign: 'center',
                           }}
                         >
-                           <Typography variant="h6" paragraph>
+                          <Typography variant="h6" paragraph>
                             Không tìm thấy
                           </Typography>
 
@@ -721,14 +725,14 @@ export default function UserPage() {
         </MenuItem>
 
 
-        {editedStatus === 1 && (
+        {editedStatus === 1 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
             Xóa
           </MenuItem>
         )}
 
-        {editedStatus === 0 && (
+        {editedStatus === 0 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
             Mở lại

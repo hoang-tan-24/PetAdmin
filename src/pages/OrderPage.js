@@ -80,7 +80,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.nameOrders.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -123,22 +123,29 @@ export default function UserPage() {
   const [time, setTime] = useState(0);
 
   const [openReturn, setOpenReturn] = useState(false);
+  const [isFailFromAPI, setIsFailFromAPI] = useState(false);
   const [getOrderListByShopId, setGetOrderListByShopId] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-        try {
-            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Order/search?shopId=${shopId}`);
-            const data = response.data;
-            setGetOrderListByShopId(data);
-            setOpenReturn(true)
-            console.log('get ok from ', response.config.url);
-            console.log("data : ", data)
-        } catch (error) {
-            console.error('Error fetching data:', error);
+      try {
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Order/search?shopId=${shopId}`);
+        const data = response.data;
+        setGetOrderListByShopId(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+        console.log("data : ", data)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        console.log(error.response.status)
+        if (error.response.status !== 200) {
+          setIsFailFromAPI(true)
+          setOpenReturn(true)
         }
+
+      }
     };
     if (shopId !== -1)
-        fetchData();
+      fetchData();
   }, [shopId]);
 
 
@@ -233,35 +240,19 @@ export default function UserPage() {
   if (!openReturn) {
     // Render loading or placeholder content while waiting for the data
     return (
-        <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '60vh',
-                fontSize: '24px',
-            }}
-        >
-            <div>Đang tải...</div>
-        </div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
     );
-}
-  /* {showOrderDetail && (
-    <>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{nameOrders}</DialogTitle>
-        <DialogContent>
-          <img src={image} alt="Product" />
-          <DialogContentText>
-            Tổng giá: {total}
-          </DialogContentText>
-          <DialogContentText>
-            {detail}
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-    </>
-  )} */
+  }
   return (
     <>
       <Helmet>
@@ -290,6 +281,13 @@ export default function UserPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
+                  {(getOrderListByShopId.length === 0 || isFailFromAPI === true) && (
+                    <TableRow>
+                      <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, totalPrice, address, userId, orderedDate, status, orderDetails, user } = row;
                     const selectedOrder = selected.indexOf(id) !== -1;

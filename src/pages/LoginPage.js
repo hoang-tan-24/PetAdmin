@@ -142,8 +142,8 @@ export default function LoginPage() {
       console.log('chuyen trang');
       setEmployee(null);
       setTimeout(() => {
-        window.location.href = '/dashboard/app'; // Reload the page after 1 second
-      }, 1000);
+        window.location.href = '/dashboard/app'; // Reload the page after xx second
+      }, 1500);
     }
 
 

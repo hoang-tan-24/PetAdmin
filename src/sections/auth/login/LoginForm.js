@@ -32,7 +32,10 @@ export default function LoginForm() {
         }
         else {
           localStorage.setItem('user', JSON.stringify(user));
-          window.location.href = '/system/dashboard';
+
+          setTimeout(() => {
+            window.location.href = '/system/dashboard';// Reload the page after 2 second
+          }, 1500);
         }
       });
     } catch (err) {
