@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const shopLogin = async (email) => {
     try {
-        const response = await axios.post(`https://localhost:7196/api/Employee/shopLogin?email=${email}`);
+        const response = await axios.post(`https://petuni-api.azurewebsites.net/api/Employee/shopLogin?email=${email}`);
 
         if (response.status !== 200) {
             return false;

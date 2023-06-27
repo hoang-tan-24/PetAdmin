@@ -7,7 +7,7 @@ const useOrderedSlot = (sid) => {
     useEffect(() => {
         const fetch = async () => {
             try {
-                const response = await axios.get(`https://localhost:7196/api/OrderSlot?shopId=${sid}`);
+                const response = await axios.get(`https://petuni-api.azurewebsites.net/api/OrderSlot?shopId=${sid}`);
                 const data = response.data;
                 setOs(data);
                 console.log('Get order slot success:', data)

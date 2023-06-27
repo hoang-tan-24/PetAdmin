@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -133,7 +134,30 @@ export default function UserPage() {
   const [updatedStatus, setUpdatedStatus] = useState(0);
   const [editedStatus, setEditedStatus] = useState(0);
 
-  const serviceListGetByShopId = useServiceListAdmin(serviceShopId);
+  const [openReturn, setOpenReturn] = useState(false);
+  const [serviceListGetByShopId, setServiceListGetByShopId] = useState([]);
+  const [isFailFromAPI, setIsFailFromAPI] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Service`);
+            const data = response.data;
+            setServiceListGetByShopId(data);
+            setOpenReturn(true)
+            console.log('get ok from ', response.config.url);
+            console.log("data : ", data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            if (error.response.status !== 200) {
+              setIsFailFromAPI(true)
+              setOpenReturn(true)
+            }
+        }
+    };
+    if (serviceShopId !== -1)
+        fetchData();
+  }, [serviceShopId]);
+
   const getShopById = useShopById(serviceShopId);
 
   const handleCreateService = async (event) => {
@@ -187,7 +211,7 @@ export default function UserPage() {
     setOpenPopup(true);
   };
 
- const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
+  const handleOpenMenu = (event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status) => {
     setOpen(event.currentTarget);
     setEditedName(name);
     setEditedCategory(categoryId);
@@ -201,11 +225,11 @@ export default function UserPage() {
     setEditedDuration(duration)
 
     if (status === 0 || status === 1) {
-        setUpdatedStatus(2);
+      setUpdatedStatus(2);
     } else if (status === 2) {
-        setUpdatedStatus(0);
+      setUpdatedStatus(0);
     } else {
-        setUpdatedStatus(status);
+      setUpdatedStatus(status);
     }
   };
 
@@ -213,7 +237,7 @@ export default function UserPage() {
     updateServiceStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
   const handleCloseMenu = () => {
     setOpen(null);
@@ -384,7 +408,22 @@ export default function UserPage() {
   const shopById = applySortFilter(getShopById, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
+    );
+  }
   return (
     <>
       <Helmet>
@@ -396,8 +435,8 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Dịch vụ
           </Typography>
-          
-          
+
+
         </Stack>
 
         <Card>
@@ -433,17 +472,23 @@ export default function UserPage() {
                             </Typography>
                           </Stack>
                         </TableCell>
-                        
+                        {(serviceListGetByShopId.length === 0 || isFailFromAPI === true) && (
+                                    <TableRow>
+                                    <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                                    </TableCell>
+                                    </TableRow>
+                                )}
                         {
                           shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                          const { id, name } = row;
-                          if (id === shopId)return (
-                            <TableCell align="left">{name}</TableCell>
-                              );
+                            const { id, name } = row;
+                            if (id === shopId) return (
+                              <TableCell align="left">{name}</TableCell>
+                            );
                             return (
                               null
-                              );
-                            }
+                            );
+                          }
                           )
                         }
                         <TableCell align="left">
@@ -468,7 +513,7 @@ export default function UserPage() {
                           {status === 2 && <Label color="error">Ẩn </Label>}
                         </TableCell>
 
-                        
+
 
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, id, image, maxSlot, categoryId, name, description, petTypeId, price, duration, status)}>
@@ -494,14 +539,14 @@ export default function UserPage() {
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="h6" paragraph>
-                            Not found
+                           <Typography variant="h6" paragraph>
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho từ khoá &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                           </Typography>
                         </Paper>
                       </TableCell>
@@ -520,6 +565,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số dịch vụ theo trang :"
           />
         </Card>
       </Container>
@@ -542,30 +588,30 @@ export default function UserPage() {
           },
         }}
       >
-                {editedStatus === 2 && (
-                    <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
-                        Bỏ cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 2 && (
+          <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:checkmark-circle-2-outline'} sx={{ mr: 2 }} />
+            Bỏ cấm
+          </MenuItem>
+        )}
 
-                {editedStatus === 1 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 1 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
 
-                {editedStatus === 0 && (
-                    <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
-                        <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
-                        Cấm
-                    </MenuItem>
-                )}
+        {editedStatus === 0 && (
+          <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
+            <Iconify icon={'eva:slash-outline'} sx={{ mr: 2 }} />
+            Cấm
+          </MenuItem>
+        )}
 
       </Popover>
 
-      
+
 
     </>
   );

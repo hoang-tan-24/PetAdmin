@@ -42,7 +42,7 @@ const systemNavConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'Hệ thống ngươi dùng',
+    title: 'Hệ thống người dùng',
     path: '/system/users',
     icon: icon('ic_user'),
   },

@@ -7,7 +7,7 @@ const useOrderListByShopId = (shopId) => {
     useEffect(() => {
         const fetch = async () => {
             try {
-                const response = await axios.get(`https://localhost:7196/api/Order/search?shopId=${shopId}`);
+                const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Order/search?shopId=${shopId}`);
                 const data = response.data;
                 setOrderList(data);
             } catch (error) {

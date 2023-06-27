@@ -4,14 +4,25 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const adminLogin = async (username, password) => {
     try {
-        const response = await axios.post(`https://localhost:7196/api/SystemAdmin?username=${username}&password=${password}`);
+        const promise = axios.post(`https://petuni-api.azurewebsites.net/api/SystemAdmin?username=${username}&password=${password}`);
+
+        toast.promise(
+            promise,
+            {
+                pending: 'Đang xử lý...',
+                success: 'Đăng nhập thành công!',
+                error: 'Đăng nhập thất bại! Vui lòng thử lại!',
+            },
+            { toastId: 'LoginAdminToast' }
+        );
+
+        const response = await promise;
         const data = response.data;
-        // console.log(data);
         if (data != null)
             localStorage.setItem('admin', JSON.stringify(data));
         return data;
     } catch (error) {
-        toast.error('Đăng nhập không thành công! Vui lòng thử lại!');
+        // toast.error('Đăng nhập không thành công! Vui lòng thử lại!');
         console.error(error);
         throw error;
     }

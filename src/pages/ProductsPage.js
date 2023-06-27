@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -133,15 +134,38 @@ export default function UserPage() {
   const [editedDescription, setEditedDescription] = useState('productDescription');
   const [editedImage, setEditedImage] = useState('productImage');
 
+  const [openUpdateStatus, setOpenUpdateStatus] = useState(false);
 
   const employee = JSON.parse(localStorage.getItem('employee'));
   if (employee && employee.shopId !== productShopId) {
     console.log("employee co shop id la : ", employee.shopId)
     setProductShopId(employee.shopId)
   }
+  const [openReturn, setOpenReturn] = useState(false);
+  const [PRODUCTLISTGETBYSHOPID, setPRODUCTLISTGETBYSHOPID] = useState([]);
+  const [isFailFromAPI, setIsFailFromAPI] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Product?ShopId=${productShopId}`);
+        const data = response.data;
+        setPRODUCTLISTGETBYSHOPID(data);
+        setOpenReturn(true)
+        console.log('get ok from ', response.config.url);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        if (error.response.status !== 200) {
+          setIsFailFromAPI(true)
+          setOpenReturn(true)
+        }
+      }
+    };
+    if (productShopId !== 0)
+      fetchData();
+  }, [productShopId]);
 
-  // lay duoc roi
-  const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
+  // // lay duoc roi
+  // const PRODUCTLISTGETBYSHOPID = useProductListByShopId(productShopId);
 
   const handleCreateProduct = async (event) => {
     // event.preventDefault();
@@ -162,7 +186,7 @@ export default function UserPage() {
     console.log(res)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   };
 
   const handleProductNameChange = (event) => {
@@ -207,6 +231,9 @@ export default function UserPage() {
     setEditedDescription(description)
     setEditedImage(image)
 
+    if (status !== 2)
+      setOpenUpdateStatus(true)
+
     if (status === 0) {
       setUpdatedStatus(1);
     } else if (status === 1) {
@@ -220,7 +247,7 @@ export default function UserPage() {
     updateProductStatus(editedId, updatedStatus)
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
 
@@ -320,7 +347,7 @@ export default function UserPage() {
 
     setTimeout(() => {
       window.location.reload(); // Reload the page after 1 second
-    }, 700);
+    }, 2000);
   }
 
   const handleEditIncreaseQuantity = () => {
@@ -369,7 +396,22 @@ export default function UserPage() {
   const filteredUsers = applySortFilter(PRODUCTLISTGETBYSHOPID, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
-
+  if (!openReturn) {
+    // Render loading or placeholder content while waiting for the data
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '60vh',
+          fontSize: '24px',
+        }}
+      >
+        <div>Đang tải...</div>
+      </div>
+    );
+  }
   return (
     <>
       <Helmet>
@@ -516,6 +558,13 @@ export default function UserPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
+                {(PRODUCTLISTGETBYSHOPID.length === 0 || isFailFromAPI === true) && (
+                    <TableRow>
+                      <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, image, name, category, quantity, price, petTypeId, status, description } = row;
                     const selectedProduct = selected.indexOf(id) !== -1;
@@ -577,13 +626,13 @@ export default function UserPage() {
                           }}
                         >
                           <Typography variant="h6" paragraph>
-                            Not found
+                            Không tìm thấy
                           </Typography>
 
                           <Typography variant="body2">
-                            No results found for &nbsp;
+                            Không có kết quả cho từ khoá &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                           </Typography>
                         </Paper>
                       </TableCell>
@@ -602,6 +651,7 @@ export default function UserPage() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Số sản phẩm theo trang :"
           />
         </Card>
       </Container>
@@ -630,14 +680,14 @@ export default function UserPage() {
         </MenuItem>
 
 
-        {editedStatus === 1 && (
+        {editedStatus === 1 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'error.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
             Xóa
           </MenuItem>
         )}
 
-        {editedStatus === 0 && (
+        {editedStatus === 0 && openUpdateStatus !== false && (
           <MenuItem sx={{ color: 'success.main' }} onClick={handleUpdateStatus}>
             <Iconify icon={'eva:checkmark-circle-outline'} sx={{ mr: 2 }} />
             Mở lại

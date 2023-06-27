@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -141,7 +142,29 @@ export default function UserPage() {
     const [editedAddress, setEditedAddress] = useState('');
 
     // lay duoc roi
-    const PETLISTGETBYSHOPID = usePetListAdmin(shopId);
+    const [openReturn, setOpenReturn] = useState(false);
+    const [PETLISTGETBYSHOPID, setPETLISTGETBYSHOPID] = useState([]);
+    const [isFailFromAPI, setIsFailFromAPI] = useState(false);
+    useEffect(() => {
+        const fetchData = async () => {
+        try {
+            const response = await axios.get(`https://petuni-api.azurewebsites.net/api/Pet`);
+            const data = response.data;
+            setPETLISTGETBYSHOPID(data);
+            setOpenReturn(true)
+            console.log('get ok from ', response.config.url);
+            console.log("data : ", data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            if (error.response.status !== 200) {
+                setIsFailFromAPI(true)
+                setOpenReturn(true)
+              }
+        }
+    };
+    if (shopId !== -1)
+        fetchData();
+    }, [shopId]);
 
     const getShopById = useShopById(shopId);
 
@@ -202,11 +225,11 @@ export default function UserPage() {
         updatePetStatus(editedId, updatedStatus)
         setTimeout(() => {
             window.location.reload(); // Reload the page after 1 second
-          }, 700);
+        }, 2000);
     }
-    
 
-    
+
+
 
     const handleCloseMenu = () => {
         setOpen(null);
@@ -296,7 +319,7 @@ export default function UserPage() {
 
 
 
-    
+
 
 
 
@@ -307,7 +330,22 @@ export default function UserPage() {
     const shopById = applySortFilter(getShopById, getComparator(order, orderBy), filterName);
 
     const isNotFound = !filteredUsers.length && !!filterName;
-
+    if (!openReturn) {
+        // Render loading or placeholder content while waiting for the data
+        return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '60vh',
+              fontSize: '24px',
+            }}
+          >
+            <div>Đang tải...</div>
+          </div>
+        );
+      }
     return (
         <>
             <Helmet>
@@ -319,9 +357,9 @@ export default function UserPage() {
                     <Typography variant="h4" gutterBottom>
                         Thú cưng
                     </Typography>
-                   
+
                 </Stack>
-                
+
                 <Card>
                     <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
@@ -338,6 +376,13 @@ export default function UserPage() {
                                     onSelectAllClick={handleSelectAllClick}
                                 />
                                 <TableBody>
+                                {(PETLISTGETBYSHOPID.length === 0 || isFailFromAPI === true) && (
+                                    <TableRow>
+                                    <TableCell colSpan={8} style={{ height: '30vh', fontSize: '24px', color: 'red' }}>
+                                        <div style={{ textAlign: 'center' }}>Không tìm thấy.. Vui lòng thử lại sau!</div>
+                                    </TableCell>
+                                    </TableRow>
+                                )}
                                     {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                         const { id, name, gender, image, price, petTypeId, status, description, address, shopId } = row;
                                         const selectedProduct = selected.indexOf(id) !== -1;
@@ -358,13 +403,13 @@ export default function UserPage() {
                                                 {
                                                     shopById.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                                                         const { id, name } = row;
-                                                        if (id === shopId)return (
+                                                        if (id === shopId) return (
                                                             <TableCell align="left">{name}</TableCell>
                                                         );
                                                         return (
                                                             null
                                                         );
-                                                        }
+                                                    }
                                                     )
                                                 }
                                                 <TableCell align="left">
@@ -397,7 +442,7 @@ export default function UserPage() {
                                                         <Iconify icon={'eva:more-vertical-fill'} />
                                                     </IconButton>
                                                 </TableCell>
-                                               
+
                                             </TableRow>
                                         );
                                     })}
@@ -418,13 +463,13 @@ export default function UserPage() {
                                                     }}
                                                 >
                                                     <Typography variant="h6" paragraph>
-                                                        Not found
+                                                        Không tìm thấy
                                                     </Typography>
 
                                                     <Typography variant="body2">
-                                                        No results found for &nbsp;
+                                                        Không có kết quả cho từ khoá &nbsp;
                                                         <strong>&quot;{filterName}&quot;</strong>.
-                                                        <br /> Try checking for typos or using complete words.
+                                                        <br /> Kiểm tra lại cú pháp hoặc thử tìm bằng từ khác.
                                                     </Typography>
                                                 </Paper>
                                             </TableCell>
@@ -443,6 +488,7 @@ export default function UserPage() {
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelRowsPerPage="Số thú cưng theo trang :"
                     />
                 </Card>
             </Container>
@@ -488,7 +534,7 @@ export default function UserPage() {
 
             </Popover>
 
-           
+
 
         </>
     );
