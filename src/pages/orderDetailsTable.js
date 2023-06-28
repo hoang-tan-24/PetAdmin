@@ -3,7 +3,7 @@ import { Table, TableHead, TableRow, TableCell, TableBody, Avatar } from '@mui/m
 
 const OrderDetailsTable = ({ orderDetails }) => {
     return (
-        <Table style={{ backgroundColor: '#ffe7c4' }}>
+        <Table >
             <TableHead >
                 <TableRow >
                     <TableCell>Hình ảnh</TableCell>

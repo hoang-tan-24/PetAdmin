@@ -25,6 +25,7 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
+  TableHead
 } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -101,6 +102,8 @@ export default function UserPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [showOrderDetail, setShowOrderDetail] = useState(false);
+  const [showUser, setShowUser] = useState(false);
+  const [userData, setUserData] = useState([]);
 
   const [openPopup, setOpenPopup] = useState(false);
   // order
@@ -181,6 +184,12 @@ export default function UserPage() {
   const handleOrderDetailPopup = () => {
     setShowOrderDetail(true);
   };
+
+  const handleUserPopup = (event, user) => {
+    setUserData(user);
+    setShowUser(true);
+  };
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -317,8 +326,9 @@ export default function UserPage() {
                         <TableCell align="left">{totalPrice}</TableCell>
 
                         <TableCell align="left">{address}</TableCell>
-                        <TableCell align="left">{user.email}</TableCell>
-
+                        <TableCell align="left" onClick={(event) => handleUserPopup(event, user)}>
+                          <span style={{ textDecoration: 'underline' }}>{user.email}</span>
+                        </TableCell>
 
 
                         <TableCell align='left'>{formattedDate}</TableCell>
@@ -467,6 +477,42 @@ export default function UserPage() {
           horizontal: 'center',
         }}
       ><OrderDetailsTable orderDetails={orderDetail} />
+      </Popover>
+      <Popover
+        open={showUser}
+        anchorEl={showUser}
+        onClose={() => setShowUser(false)}
+        anchorOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'center',
+          horizontal: 'center',
+        }}
+      ><Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Địa chỉ Hiện tại</TableCell>
+              <TableCell>Số điện thoại</TableCell>
+              <TableCell>Trạng thái</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell>{userData.id}</TableCell>
+              <TableCell>{userData.email}</TableCell>
+              <TableCell>{userData.address}</TableCell>
+              <TableCell>{userData.phone}</TableCell>
+              <TableCell align="left">
+                {userData.status === 0 && <Label color="error"> Đang khóa  </Label>}
+                {userData.status === 1 && <Label color="success">Đang hoạt động</Label>}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </Popover>
     </>
   );
